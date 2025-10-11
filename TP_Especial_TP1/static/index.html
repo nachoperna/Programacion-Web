@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio</title>
+    <link rel="stylesheet" href="./css/estilos.css">
+</head>
+<body>
+      <div class="main-container">
+            <div class="two-column-layout">
+                  <!-- Columna izquierda (azul) -->
+                  <div class="info-column">
+                        <h1>Bienvenido a CandyPay</h1>
+                        <p>Un Home Banking simple y seguro.</p>
+                        <ul>
+                              <li>Crea tu cuenta gratuitamente</li>
+                              <li>Depositá y retirá dinero de manera instantánea</li>
+                              <li>Transferí a cualquier usuario con un alias registrado</li>
+                              <li>Pedí préstamos</li>
+                              <li>Invertí tu dinero y genera rendimientos en un click</li>
+                        </ul>
+                  </div>
+            
+                  <!-- Columna derecha (rosa) -->
+                  <div class="form-column">
+                        <div class="login-options">
+                              <button type="button" class="client-button" onclick="displayLogin()">Soy cliente</button> 
+                              <button type="button" class="noclient-button" onclick="displayRegister()">No soy cliente</button> 
+                        </div>
+                        <div class="login-form" id="login-form">
+                              <h2>Iniciar Sesión</h2>
+                              <form action="/data-confirmation" method="POST" target="_self">
+                                    <div class="form-group">
+                                          <label for="text">Ingresa tu alias</label>
+                                          <input type="text" id="alias" name="alias" required>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                          <label for="password">Ingresa tu contraseña</label>
+                                          <input type="password" id="password" name="password" required>
+                                    </div>
+                                    
+                                    <div class="form-options">
+                                          <a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a>
+                                    </div>
+                                    
+                                    <button type="submit" class="login-button">Ingresar</button>
+                              </form>
+                        </div>
+
+                        <div class="register-form" id="register-form">
+                              <h2>Registrarme</h2>
+                              <form action="/data-confirmation" method="POST" target="_self">
+                                    <div class="form-group">
+                                          <label for="email">Ingresa tu email</label>
+                                          <input type="email" id="email" name="email" required>
+                                    </div>
+
+                                    <div class="form-group">
+                                          <label for="text">Registra tu alias</label>
+                                          <input type="text" id="alias" name="alias" required>
+                                    </div>
+
+                                    <div class="form-group">
+                                          <label for="password">Ingresa tu contraseña</label>
+                                          <input type="password" id="password" name="password" required>
+                                    </div>
+
+                                    <button type="submit" class="login-button">Registrarme</button>
+                              </form>
+                        </div>
+
+                        <script>
+                              function displayLogin(){
+                                    document.getElementById("register-form").style.display = "none";
+                                    document.getElementById("login-form").style.display = "block";
+                              }
+                              function displayRegister(){
+                                    document.getElementById("login-form").style.display = "none";
+                                    document.getElementById("register-form").style.display = "block";
+                              }
+                        </script>
+                  </div>
+            </div>
+      </div>
+</body>
+</html>
