@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres
+    container_name: BD_tp2sqlc
+    environment:
+      POSTGRES_USER: nachoperna
+      POSTGRES_PASSWORD: nachobdtp2sqlc
+      POSTGRES_DB: BD_tp2sqlc
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/schema:/docker-entrypoint-initdb.d:ro,Z # ro,Z agregado por problemas especificos de Fedora
+volumes:
+  postgres_data:

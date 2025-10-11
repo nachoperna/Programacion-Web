@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres
+    container_name: BD_tp2
+    environment:
+      POSTGRES_USER: nachoperna
+      POSTGRES_PASSWORD: nachobdtp2
+      POSTGRES_DB: BD_tp2
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./SQL:/docker-entrypoint-initdb.d # Con esto docker ejecuta todo dentro de SQL/ al levantar el servidor. el 
+volumes:
+  postgres_data:
