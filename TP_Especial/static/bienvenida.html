@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tu cuenta</title>
+    <link href="./css/generales.css" rel="stylesheet">
+    <link href="./css/index.css" rel="stylesheet">
+    <link href="./css/bienvenida.css" rel="stylesheet">
+</head>
+<body>
+      <div class="main-container">
+            <div class="two-column-layout">
+                  <div class="info-column">
+                        <!-- <button type="button" class="button-reload" onclick="recargarPagina()"> -->
+                        <!--       <img src="./img/reload-svgrepo-com.svg" alt="Recargar página" width="48" height="48"> -->
+                        <!-- </button> -->
+                        <h2>Tu Información, {{.Name}}</h2> 
+                        <div class="tarjetas">
+                              <label>Balance</label>
+                              <span id="balance">
+                                    {{if .Balance}}
+                                    $ {{.Balance}} ARS
+                                    {{else}}
+                                    $ 0.00 ARS
+                                    {{end}}
+                              </span>
+                        </div>
+                        <div class="tarjetas">
+                              <label>Alias</label>
+                              <span>{{.Alias}}</span>
+                        </div>
+                        <div class="tarjetas">
+                              <label>Email</label>
+                              <span>{{.Email}}</span>
+                        </div>
+                        <div class="tarjetas">
+                              <label>Último movimiento</label>
+                              <span>{{.LastMovementType}}</span>
+                        </div>
+                        
+                        <a  href="/">
+                              <button id="boton-inicio" type="">Volver al inicio</button>
+                        </a>
+                  </div>
+
+                  <div class="form-column">
+                        <h2>Operaciones</h2>
+
+                        <div class="operaciones-buttons">
+                              <button type="button" onclick="mostrarFormulario('form-deposito')">Depositar</button>
+                              <button type="button" onclick="mostrarFormulario('form-retiro')">Retirar</button>
+                              <button type="button" onclick="mostrarFormulario('form-transferencia')">Transferir</button>
+                        </div>
+
+                        <div id="form-deposito" class="operation-form form-visible">
+                              <h3>Realizar Depósito</h3>
+                              <form action="/deposit" method="POST">
+                                    <div class="form-group">
+                                          <label for="dep-alias-destino">Alias destino:</label>
+                                          <input type="text" id="dep-alias-destino" name="alias" value="{{.Alias}}" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                          <label for="dep-monto">Monto:</label>
+                                          <input type="number" id="dep-monto" name="amount" required>
+                                    </div>
+                                    <button type="submit" class="login-button">Confirmar Depósito</button>
+                              </form>
+                        </div>
+
+                        <div id="form-retiro" class="operation-form">
+                              <h3>Realizar Retiro</h3>
+                              <form action="/withdrawal" method="POST">
+                                    <div class="form-group">
+                                          <label for="ret-alias-origen">Tu Alias:</label>
+                                          <input type="text" id="ret-alias-origen" name="alias" value="{{.Alias}}" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                          <label for="ret-monto">Monto:</label>
+                                          <input type="number" id="ret-monto" name="amount" required>
+                                    </div>
+                                    <button type="submit" class="login-button">Confirmar Retiro</button>
+                              </form>
+                        </div>
+
+                        <div id="form-transferencia" class="operation-form">
+                              <h3>Realizar Transferencia</h3>
+                              <form action="/transfer" method="POST">
+                                    <div class="form-group">
+                                          <label for="trans-alias-origen">Alias origen:</label>
+                                          <input type="text" id="trans-alias-origen" name="own_alias" value="{{.Alias}}" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                          <label for="trans-alias-destino">Alias destino:</label>
+                                          <input type="text" id="trans-alias-destino" name="other_alias" required>
+                                    </div>
+                                    <div class="form-group">
+                                          <label for="trans-monto">Monto:</label>
+                                          <input type="number" id="trans-monto" name="amount" required>
+                                    </div>
+                                    <button type="submit" class="login-button">Confirmar Transferencia</button>
+                              </form>
+                        </div>
+                  </div>
+            </div>
+      </div>
+
+    <script>
+        // Función única para mostrar el formulario seleccionado y ocultar los demás
+        function mostrarFormulario(formId) {
+            const forms = document.querySelectorAll('.operation-form');
+            forms.forEach(form => {
+                  if (form.id === formId) {
+                        // Si es el formulario que queremos mostrar, le añadimos la clase
+                        form.classList.add('form-visible');
+                  } else {
+                        // A todos los demás, se la quitamos
+                        form.classList.remove('form-visible');
+                  }
+            });
+        }
+
+        function recargarPagina(){
+              location.reload();
+        }
+    </script>
+</body>
+</html>
