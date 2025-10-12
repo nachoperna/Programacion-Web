@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres
+    container_name: BD_TPEspecial
+    environment:
+      POSTGRES_USER: nachoperna
+      POSTGRES_PASSWORD: nachobdtpe
+      POSTGRES_DB: BD_TPEspecial
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/schema:/docker-entrypoint-initdb.d:ro,Z # ro,Z agregado por problemas especificos de Fedora
+volumes:
+  postgres_data:
