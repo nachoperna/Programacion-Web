@@ -34,7 +34,7 @@ cuenta actual y el ultimo movimiento que hicimos.
 ### Depósitos
 En esta función el usuario tiene ingresado por defecto su propio alias y solo debe colocar el monto a depositar en su cuenta, donde una función en Go parsea
 esos datos y verifica con la base que el alias ingresado este registrado y el monto sea un valor correcto, continuando
-con la actualización del balance del usuario. Con tan solo recargar la página actual vamos a poder observar el cambio en
+con la actualización del balance del usuario. Vamos a poder observar el cambio en
 el balance del usuario y el ultimo tipo de movimiento hecho, gracias a una redirección que hacemos desde cada método
 funcional en Go devuelta a la página de bienvenida y pasando parámetros a través de la URL donde el Handler que se
 encarga de servir este html parsea los datos..
@@ -42,13 +42,13 @@ encarga de servir este html parsea los datos..
 ### Retiros
 En esta función el usuario tiene ingresado por defecto su propio alias y solo debe colocar el monto a retirar en su cuenta, donde una función en Go parsea
 esos datos y verifica con la base que el alias ingresado este registrado y el monto sea un valor correcto, continuando
-con el descuento en el balance del usuario, que podemos observar al recargar la página.
+con el descuento en el balance del usuario, que podemos observar automaticamente sin hacer nada.
 
 ### Transferencias
 En esta función el usuario tiene ingresado por defecto su propio alias y debe colocar el alias al que quiera transferir y el monto, donde una función en Go parsea
 esos datos y verifica con la base que ambos alias ingresados esten registrados y el monto sea un valor correcto, continuando
 con el descuento en el balance de la cuenta origen y el deposito en el balance de la cuenta destino. El correcto
-funcionamiento se comprueba recargando la página actual y comprobando que el balance del usuario disminuyó si todo salió
+funcionamiento lo vemos comprobando que el balance del usuario disminuyó si todo salió
 bien y haciendo un login en la cuenta a la que transferimos para verificar su nuevo balance.
 
 ### Ruta inválida
