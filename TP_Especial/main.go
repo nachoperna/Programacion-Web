@@ -51,8 +51,8 @@ func main() {
 	// Procesamiento del formulario de REGISTRO
 	http.HandleFunc("/register-confirmation", confirmRegiser)
 
-	// Servir Home del usuario
-	http.HandleFunc("/bienvenida", showHome)
+	// Servir home del usuario
+	http.HandleFunc("/home", showhome)
 
 	// Procesamiento de DEPOSITO
 	http.HandleFunc("/deposit", deposit)
@@ -67,7 +67,7 @@ func main() {
 	http.ListenAndServe(":8080", nil)
 }
 
-func showHome(w http.ResponseWriter, r *http.Request) {
+func showhome(w http.ResponseWriter, r *http.Request) {
 	values := r.URL.Query()
 	balance, err := queries.GetBalance(ctx, values.Get("alias"))
 	if err != nil {
@@ -80,9 +80,8 @@ func showHome(w http.ResponseWriter, r *http.Request) {
 		"LastMovementType": balance.LastMovementType.String,
 	}
 
-	var user sqlc.User
-	if values.Get("name") == "" {
-		user, _ = queries.GetUser(ctx, values.Get("alias"))
+	if values.Get("name") == "" { // significa que llegamos a home a traves de una operacion y debemos ir a la base a obtener los datos faltantes
+		user, _ := queries.GetUser(ctx, values.Get("alias"))
 		datos["Name"] = user.Name
 		datos["Email"] = user.Email
 	} else {
@@ -115,7 +114,7 @@ func confirmLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	redirectURL := fmt.Sprintf("/bienvenida?alias=%s&name=%s&email=%s",
+	redirectURL := fmt.Sprintf("/home?alias=%s&name=%s&email=%s",
 		user.Alias,
 		user.Name,
 		user.Email)
@@ -146,7 +145,7 @@ func confirmRegiser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	redirectURL := fmt.Sprintf("/bienvenida?alias=%s&name=%s&email=%s",
+	redirectURL := fmt.Sprintf("/home?alias=%s&name=%s&email=%s",
 		datos["Alias"],
 		datos["Name"],
 		datos["Email"])
@@ -175,7 +174,7 @@ func deposit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	redirectURL := fmt.Sprintf("/bienvenida?alias=%s",
+	redirectURL := fmt.Sprintf("/home?alias=%s",
 		datos["Alias"])
 
 	http.Redirect(w, r, redirectURL, http.StatusSeeOther)
@@ -219,7 +218,7 @@ func transfer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	redirectURL := fmt.Sprintf("/bienvenida?alias=%s",
+	redirectURL := fmt.Sprintf("/home?alias=%s",
 		datos["Alias_propio"])
 
 	http.Redirect(w, r, redirectURL, http.StatusSeeOther)
@@ -246,7 +245,7 @@ func withdrawal(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	redirectURL := fmt.Sprintf("/bienvenida?alias=%s&name=%s&email=%s",
+	redirectURL := fmt.Sprintf("/home?alias=%s&name=%s&email=%s",
 		datos["Alias"])
 
 	http.Redirect(w, r, redirectURL, http.StatusSeeOther)
