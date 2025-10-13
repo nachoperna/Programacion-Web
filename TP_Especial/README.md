@@ -25,25 +25,31 @@ Go.
 Se sirve un [index.html](./static/index.html) que organiza una página de bienvenida con un **Título**, **Logos** y **Diseños personalizados** donde encontramos información de lo que podremos hacer dentro de la página y una sección para darnos de alta como usuario si no somos clientes ya, y una seccion para ingresar a nuestra cuenta si ya somos clientes.
 
 ### Inicio de sesión y Registro
-Debemos primero registrar un mail junto con un alias y contraseña en la página para darnos de alta como usuario en la base de datos. **Tanto el alias como el mail deben ser únicos** dentro del registro de la página, caso contrario se lo notará con un aviso al usuario (próximamente). Luego de ingresar nuestros datos correctos nos iremos redirigidos a una sección de [bienvenida](./static/bienvenida.html) donde se mostrarán nuestros datos recién ingresados notando que el codigo en Go
-los reconoció correctamente.
+Debemos primero registrar un mail junto con un alias y contraseña en la página para darnos de alta como usuario en la
+base de datos. **Tanto el alias como el mail deben ser únicos** dentro del registro de la página, caso contrario se lo
+notará con un aviso al usuario. Luego de ingresar nuestros datos correctos nos iremos redirigidos a una sección de
+[bienvenida](./static/bienvenida.html) donde se mostrarán nuestros datos recién ingresados junto con nuestro balance de
+cuenta actual y el ultimo movimiento que hicimos.
 
 ### Depósitos
 En esta función el usuario tiene ingresado por defecto su propio alias y solo debe colocar el monto a depositar en su cuenta, donde una función en Go parsea
 esos datos y verifica con la base que el alias ingresado este registrado y el monto sea un valor correcto, continuando
-con la actualización del balance del usuario. Por el momento no se implementó una página de resumen de cuenta del
-usuario donde pueda observar su balance y movimientos, pero se puede controlar la funcionalidad con un comando a la base
-datos **docker exec -it BD_TPEspecial psql -U nachoperna -d BD_TPEspecial -c "SELECT balance FROM accounts WHERE alias = 'usuario123';"** 
+con la actualización del balance del usuario. Con tan solo recargar la página actual vamos a poder observar el cambio en
+el balance del usuario y el ultimo tipo de movimiento hecho, gracias a una redirección que hacemos desde cada método
+funcional en Go devuelta a la página de bienvenida y pasando parámetros a través de la URL donde el Handler que se
+encarga de servir este html parsea los datos..
 
 ### Retiros
 En esta función el usuario tiene ingresado por defecto su propio alias y solo debe colocar el monto a retirar en su cuenta, donde una función en Go parsea
 esos datos y verifica con la base que el alias ingresado este registrado y el monto sea un valor correcto, continuando
-con el descuento en el balance del usuario.
+con el descuento en el balance del usuario, que podemos observar al recargar la página.
 
 ### Transferencias
 En esta función el usuario tiene ingresado por defecto su propio alias y debe colocar el alias al que quiera transferir y el monto, donde una función en Go parsea
 esos datos y verifica con la base que ambos alias ingresados esten registrados y el monto sea un valor correcto, continuando
-con el descuento en el balance de la cuenta origen y el deposito en el balance de la cuenta destino.
+con el descuento en el balance de la cuenta origen y el deposito en el balance de la cuenta destino. El correcto
+funcionamiento se comprueba recargando la página actual y comprobando que el balance del usuario disminuyó si todo salió
+bien y haciendo un login en la cuenta a la que transferimos para verificar su nuevo balance.
 
 ### Ruta inválida
 En el caso de que el usuario ingrese una url no reconocida en el código de la página, se servirá un [ruta_invalida.html](./static/ruta_invalida.html) que le indique un error 404 significando que esa sección no se encuentra en la página, con la posibilidad de poder volver al inicio.
