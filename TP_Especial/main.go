@@ -132,16 +132,17 @@ func confirmRegiser(w http.ResponseWriter, r *http.Request) {
 
 	_, err := queries.GetUser(ctx, datos["Alias"])
 	if err == sql.ErrNoRows {
-		err = queries.InsertUser(ctx, sqlc.InsertUserParams{
+		_, err = queries.InsertUser(ctx, sqlc.InsertUserParams{
 			Alias:    datos["Alias"],
 			Name:     datos["Name"],
 			Email:    datos["Email"],
 			Password: datos["Password"]})
 		if err != nil {
-			http.Error(w, "Error al insertar usuario en la base", http.StatusInternalServerError)
+			http.Redirect(w, r, "/?error=error_registro", http.StatusSeeOther)
+			return
 		}
 	} else {
-		http.Error(w, "El alias ya se encuentra registrado en la Base. Por favor elija otro", http.StatusInternalServerError)
+		http.Redirect(w, r, "/?error=alias_usado", http.StatusSeeOther)
 		return
 	}
 
@@ -181,7 +182,6 @@ func deposit(w http.ResponseWriter, r *http.Request) {
 }
 
 func transfer(w http.ResponseWriter, r *http.Request) {
-	// POR EL MOMMENTO EL USUARIO DEBE INGRESAR SU PROPIO ALIAS
 	datos := map[string]string{
 		"Alias_propio": r.FormValue("own_alias"),
 		"Alias_otro":   r.FormValue("other_alias"),
@@ -225,7 +225,6 @@ func transfer(w http.ResponseWriter, r *http.Request) {
 }
 
 func withdrawal(w http.ResponseWriter, r *http.Request) {
-	// POR EL MOMMENTO EL USUARIO DEBE INGRESAR SU PROPIO ALIAS
 	datos := map[string]string{
 		"Alias":  r.FormValue("alias"),
 		"Amount": r.FormValue("amount"),
