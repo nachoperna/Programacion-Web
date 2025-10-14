@@ -44,9 +44,14 @@
                                     </div>
                                     
                                     <div class="form-options">
-                                          <a href="/newPassword" class="forgot-password">¿Olvidaste tu contraseña?</a>
+                                          <a class="forgot-password" onclick="displayNewPass()">¿Olvidaste tu contraseña?</a>
                                     </div>
-                                    
+
+                                    <div class="form-group new-pass-unactive" id="new-password">
+                                          <label for="password">Ingresa tu nueva contraseña</label>
+                                          <input type="password" id="new-pass" name="new-pass" required>
+                                    </div>
+
                                     <button type="submit" class="login-button">Ingresar</button>
                               </form>
                         </div>
