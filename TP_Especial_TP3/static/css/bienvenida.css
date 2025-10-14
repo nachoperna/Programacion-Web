@@ -1,0 +1,112 @@
+.info-column {
+      gap: 15px;
+      padding-top: 40px;
+      padding-bottom: 40px;
+}
+
+.info-column h2 {
+      margin-bottom: 20px;
+      font-size: 2rem;
+}
+
+/* .button-reload { */
+/*       background: none; */
+/*       border: none; */
+/*       padding-top: 5px; */
+/*       cursor: pointer; */
+/* } */
+
+/* Contenedor para la información del usuario */
+.tarjetas {
+      display: inline-flex;
+      align-items: center;
+      color: black;
+      text-align: center;
+      box-shadow: 0 10px 90px rgba(0, 0, 0, 0.45);
+}
+
+.tarjetas label,
+.tarjetas span {
+      display: flex;
+      padding: 5px 10px;
+      font-size: 1.25rem;
+}
+
+.tarjetas label {
+      font-weight: bold;
+      border: 1px solid black;
+      background-color: #ffa0b5;
+      border-top-left-radius: 8px;
+      border-bottom-left-radius: 8px;
+}
+
+.tarjetas span {
+      background-color: #f3e8ff;
+      border-top: 1px solid black;
+      border-right: 1px solid black;
+      border-bottom: 1px solid black;
+      border-top-right-radius: 8px;
+      border-bottom-right-radius: 8px;
+}
+
+#balance {
+      color: green;
+      font-weight: bold;
+}
+
+#boton-inicio {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+}
+
+/* Botones para las operaciones */
+.operaciones-buttons {
+      display: flex;
+      gap: 15px;
+      /* Espacio entre botones */
+      margin-bottom: 30px;
+}
+
+.operaciones-buttons button {
+      flex: 1;
+      /* Ocupan el mismo espacio */
+      padding: 15px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+      color: white;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.operaciones-buttons button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(124, 58, 237, 0.4);
+}
+
+.operation-form {
+      display: none;
+      background-color: #f3e8ff;
+      border-radius: 10px;
+      padding: 25px;
+      margin-top: 20px;
+}
+
+.operation-form h3 {
+      text-align: center;
+      color: #4c1d95;
+      margin-bottom: 20px;
+}
+
+.operation-form.form-visible {
+      display: block;
+}
