@@ -15,7 +15,11 @@ insert into users
 returning *;
 
 -- name: UpdateUser :one
-update users set name = $2, email = $3, password = $4 where alias = $1
+update users set
+      name = coalesce(nullif(sqlc.arg('name'),''), name), 
+      email = coalesce(nullif(sqlc.arg('email'),''), email), 
+      password = coalesce(nullif(sqlc.arg('password'),''), password)
+where alias = $1
 returning *;
 
 -- name: DeleteAllUsers :exec
