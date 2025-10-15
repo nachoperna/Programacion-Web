@@ -5,13 +5,14 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	_ "github.com/lib/pq"
 	"html/template"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strconv"
+
+	_ "github.com/lib/pq"
 )
 
 var queries *sqlc.Queries
@@ -100,18 +101,31 @@ func showhome(w http.ResponseWriter, r *http.Request) {
 
 func confirmLogin(w http.ResponseWriter, r *http.Request) {
 	datos := map[string]string{
-		"Alias":    r.FormValue("alias"),
-		"Password": r.FormValue("password"),
+		"Alias":        r.FormValue("alias"),
+		"Password":     r.FormValue("password"),
+		"New_Password": r.FormValue("new-pass"),
 	}
-
-	user, err := queries.GetUser(ctx, datos["Alias"])
-	if err == sql.ErrNoRows {
-		http.Redirect(w, r, "/?error=alias_not_found", http.StatusSeeOther)
-		return
-	}
-	if user.Password != datos["Password"] {
-		http.Redirect(w, r, "/?error=password_incorrect", http.StatusSeeOther)
-		return
+	var user sqlc.User
+	var err error
+	if datos["New_Password"] != "" {
+		user, err = queries.UpdateUser(ctx, sqlc.UpdateUserParams{
+			Alias:    datos["Alias"],
+			Password: datos["New_Password"],
+		})
+		if err == sql.ErrNoRows {
+			http.Redirect(w, r, "/?error=alias_not_found", http.StatusSeeOther)
+			return
+		}
+	} else {
+		user, err = queries.GetUser(ctx, datos["Alias"])
+		if err == sql.ErrNoRows {
+			http.Redirect(w, r, "/?error=alias_not_found", http.StatusSeeOther)
+			return
+		}
+		if user.Password != datos["Password"] {
+			http.Redirect(w, r, "/?error=password_incorrect", http.StatusSeeOther)
+			return
+		}
 	}
 
 	redirectURL := fmt.Sprintf("/home?alias=%s&name=%s&email=%s",
