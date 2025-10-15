@@ -10,8 +10,12 @@ function displayRegister(){
 function displayNewPass(){
       if (!document.getElementById("new-password").classList.contains('new-pass-unactive')){
             document.getElementById("new-password").classList.add('new-pass-unactive');
+            document.getElementById("new-pass").disabled = true;
+            document.getElementById("password").required = true;
       }else{
             document.getElementById("new-password").classList.remove('new-pass-unactive');
+            document.getElementById("new-pass").disabled = false;
+            document.getElementById("password").required = false;
       }
 }
 
