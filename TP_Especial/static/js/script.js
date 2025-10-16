@@ -36,5 +36,25 @@ window.onload = function() {
             case 'alias_usado':
                   alert("El alias ingresado ya se encuentra registrado en la base.")
                   break
+            case 'not_enough_balance':
+                  alert("No tienes fondos suficientes para realizar la operación.")
+                  break
       }
 };
+// Función única para mostrar el formulario seleccionado y ocultar los demás
+function mostrarFormulario(formId) {
+const forms = document.querySelectorAll('.operation-form');
+forms.forEach(form => {
+      if (form.id === formId) {
+            // Si es el formulario que queremos mostrar, le añadimos la clase
+            form.classList.add('form-visible');
+      } else {
+            // A todos los demás, se la quitamos
+            form.classList.remove('form-visible');
+      }
+});
+}
+
+function recargarPagina(){
+      location.reload();
+}
