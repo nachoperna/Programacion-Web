@@ -207,6 +207,12 @@ func transfer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if !enoughBalance(w, datos["Alias_propio"], amount) {
+		redirectURL := fmt.Sprintf("/home?alias=%s&error=not_enough_balance", datos["Alias_propio"])
+		http.Redirect(w, r, redirectURL, http.StatusSeeOther)
+		return
+	}
+
 	_, err = queries.GetUser(ctx, datos["Alias_otro"])
 	if err == sql.ErrNoRows {
 		http.Error(w, "La alias destino no esta registrado en el sistema", http.StatusInternalServerError)
@@ -248,7 +254,11 @@ func withdrawal(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Monto inválido", http.StatusBadRequest)
 		return
 	}
-
+	if !enoughBalance(w, datos["Alias"], amount) {
+		redirectURL := fmt.Sprintf("/home?alias=%s&error=not_enough_balance", datos["Alias"])
+		http.Redirect(w, r, redirectURL, http.StatusSeeOther)
+		return
+	}
 	err = queries.Withdrawal(ctx, sqlc.WithdrawalParams{
 		Alias:                datos["Alias"],
 		LastWithdrawalAmount: sql.NullString{String: fmt.Sprintf("%.2f", amount), Valid: true},
@@ -262,6 +272,19 @@ func withdrawal(w http.ResponseWriter, r *http.Request) {
 		datos["Alias"])
 
 	http.Redirect(w, r, redirectURL, http.StatusSeeOther)
+}
+
+func enoughBalance(w http.ResponseWriter, alias string, monto float64) bool {
+	balance, err := queries.GetBalance(ctx, alias)
+	if err != nil {
+		http.Error(w, "Error al obtener balance", http.StatusInternalServerError)
+	}
+	balanceS := balance.Balance                     // Se obtiene el valor String balance de la fila devuelta
+	balanceP, _ := strconv.ParseFloat(balanceS, 64) // Se parsea el string a float64
+	if monto > balanceP {
+		return false
+	}
+	return true
 }
 
 // func newPassword(w http.ResponseWriter, r *http.Request){
