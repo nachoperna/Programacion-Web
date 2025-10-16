@@ -12,10 +12,12 @@
       <div class="main-container">
             <div class="two-column-layout">
                   <div class="info-column">
-                        <!-- <button type="button" class="button-reload" onclick="recargarPagina()"> -->
-                        <!--       <img src="./img/reload-svgrepo-com.svg" alt="Recargar página" width="48" height="48"> -->
-                        <!-- </button> -->
-                        <h2>Tu Información, {{.Name}}</h2> 
+                        <div class="header">
+                              <h2>Tu Información, {{.Name}}</h2> 
+                              <button type="button" class="button-reload" onclick="recargarPagina()">
+                                    <img src="./img/reload-svgrepo-com.svg" alt="Recargar página">
+                              </button>
+                        </div>
                         <div class="tarjetas">
                               <label>Balance</label>
                               <span id="balance">
@@ -51,6 +53,7 @@
                               <button type="button" onclick="mostrarFormulario('form-deposito')">Depositar</button>
                               <button type="button" onclick="mostrarFormulario('form-retiro')">Retirar</button>
                               <button type="button" onclick="mostrarFormulario('form-transferencia')">Transferir</button>
+                              <button type="button" onclick="mostrarFormulario('form-pedido')">Pedir dinero</button>
                         </div>
 
                         <div id="form-deposito" class="operation-form form-visible">
@@ -101,28 +104,33 @@
                                     <button type="submit" class="login-button">Confirmar Transferencia</button>
                               </form>
                         </div>
+
+                        <div id="form-pedido" class="operation-form">
+                              <h3>Pedir dinero</h3>
+                              <form action="/transfer" method="POST">
+                                    <div class="form-group">
+                                          <label for="trans-alias-origen">Alias origen:</label>
+                                          <input type="text" id="trans-alias-origen" name="own_alias" value="{{.Alias}}" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                          <label for="trans-alias-destino">Alias destino:</label>
+                                          <input type="text" id="trans-alias-destino" name="other_alias" required>
+                                    </div>
+                                    <div class="form-group">
+                                          <label for="pedido-monto">Monto:</label>
+                                          <input type="number" id="pedido-monto" name="amount" required>
+                                    </div>
+                                    <div class="form-group">
+                                          <label for="pedido-mensaje">Mensaje:</label>
+                                          <input type="text" id="pedido-mensaje" name="mensaje">
+                                    </div>
+                                    <button type="submit" class="login-button">Confirmar Pedido</button>
+                              </form>
+                        </div>
                   </div>
             </div>
       </div>
 
-    <script>
-        // Función única para mostrar el formulario seleccionado y ocultar los demás
-        function mostrarFormulario(formId) {
-            const forms = document.querySelectorAll('.operation-form');
-            forms.forEach(form => {
-                  if (form.id === formId) {
-                        // Si es el formulario que queremos mostrar, le añadimos la clase
-                        form.classList.add('form-visible');
-                  } else {
-                        // A todos los demás, se la quitamos
-                        form.classList.remove('form-visible');
-                  }
-            });
-        }
-
-        function recargarPagina(){
-              location.reload();
-        }
-    </script>
+    <script src="./js/script.js"> </script>
 </body>
 </html>
