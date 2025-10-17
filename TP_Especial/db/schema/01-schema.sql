@@ -26,13 +26,12 @@ ALTER TABLE accounts ADD CONSTRAINT fk_user_account
       FOREIGN KEY(alias) REFERENCES users(alias)
 ;
 
-CREATE TABLE messages(
-      alias varchar(30) not null,
-      amount numeric(10,2),
-      CONSTRAINT Accounts_pk PRIMARY KEY(alias)
+CREATE TABLE money_requests(
+      from_alias varchar(30) not null,
+      to_alias varchar(30) not null,
+      amount numeric(10,2) not null,
+      date timestamp default current_timestamp not null,
+      message text
 );
 
-ALTER TABLE messages ADD CONSTRAINT fk_user_messages
-      FOREIGN KEY(alias) REFERENCES users(alias)
-;
 -- Puede existir tambien una tabla Transferencia donde tenga informacion de cuenta origen, destino, fechas y montos
