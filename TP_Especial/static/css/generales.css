@@ -33,9 +33,9 @@ body {
 
 /* Columna de información (azul) */
 .info-column {
-      flex: 1;
-      padding-left: 80px;
-      padding-right: 200px;
+      flex: 3;
+      padding-left: 60px;
+      padding-right: 60px;
       padding-top: 40px;
       background: linear-gradient(to right, #011a63, #022B9A);
       color: white;
@@ -82,7 +82,7 @@ body {
 /* Columna de formulario (rosa) */
 .form-column,
 .bienvenida {
-      flex: 1;
+      flex: 2;
       background-color: #FFA0B5;
       padding: 40px 40px;
       display: block;

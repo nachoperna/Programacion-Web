@@ -38,12 +38,46 @@
                         </div>
                         <div class="tarjetas">
                               <label>Último movimiento</label>
-                              <span>{{.LastMovementType}}</span>
+                              <span>
+                                    {{if .LastMovementType}}
+                                    {{.LastMovementType}}
+                                    {{else}}
+                                    - 
+                                    {{end}}
+                              </span>
                         </div>
                         
-                        <a  href="/">
-                              <button id="boton-inicio" type="">Volver al inicio</button>
-                        </a>
+                        <div class="footer">
+                              <a  href="/">
+                                    <button id="boton-inicio" type="">Volver al inicio</button>
+                              </a>
+
+                              <a>
+                                    <button id="boton-pedidos" type="button" onclick="displayPedidos()">Pedidos de dinero</button>
+                              </a>
+                        </div>
+                        <table id="tabla-pedidos" class="tabla-pedidos-unactive">
+                              <thead>
+                                    <tr>
+                                          <th>Pedidor</th>
+                                          <th>Monto</th>
+                                          <th>Mensaje</th>
+                                          <th>Dia</th>
+                                          <th>Hora</th>
+                                    </tr>
+                              </thead>
+                              <tbody>
+                                    {{range .Mensajes}}
+                                    <tr>
+                                          <td>{{.FromAlias}}</td>
+                                          <td>$ {{.Amount}}</td>
+                                          <td id="mensaje">{{.Message.String}}</td>
+                                          <td>{{.Day}}</td>
+                                          <td>{{.Time}}</td>
+                                    </tr>
+                                    {{end}} 
+                              </tbody>
+                        </table>
                   </div>
 
                   <div class="form-column">
@@ -107,14 +141,14 @@
 
                         <div id="form-pedido" class="operation-form">
                               <h3>Pedir dinero</h3>
-                              <form action="/transfer" method="POST">
+                              <form action="/moneyRequest" method="POST">
                                     <div class="form-group">
                                           <label for="trans-alias-origen">Alias origen:</label>
-                                          <input type="text" id="trans-alias-origen" name="own_alias" value="{{.Alias}}" readonly>
+                                          <input type="text" id="trans-alias-origen" name="from_alias" value="{{.Alias}}" readonly>
                                     </div>
                                     <div class="form-group">
                                           <label for="trans-alias-destino">Alias destino:</label>
-                                          <input type="text" id="trans-alias-destino" name="other_alias" required>
+                                          <input type="text" id="trans-alias-destino" name="to_alias" required>
                                     </div>
                                     <div class="form-group">
                                           <label for="pedido-monto">Monto:</label>
@@ -122,7 +156,7 @@
                                     </div>
                                     <div class="form-group">
                                           <label for="pedido-mensaje">Mensaje:</label>
-                                          <input type="text" id="pedido-mensaje" name="mensaje">
+                                          <input type="text" id="pedido-mensaje" name="message">
                                     </div>
                                     <button type="submit" class="login-button">Confirmar Pedido</button>
                               </form>

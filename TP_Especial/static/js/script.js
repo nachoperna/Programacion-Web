@@ -19,6 +19,14 @@ function displayNewPass(){
       }
 }
 
+function displayPedidos(){
+      if (document.getElementById("tabla-pedidos").classList.contains('tabla-pedidos-unactive')){
+            document.getElementById("tabla-pedidos").classList.remove('tabla-pedidos-unactive');
+      }else{
+            document.getElementById("tabla-pedidos").classList.add('tabla-pedidos-unactive');
+      }
+}
+
 window.onload = function() {
       const urlParams = new URLSearchParams(window.location.search);
       const error = urlParams.get('error');
@@ -38,6 +46,12 @@ window.onload = function() {
                   break
             case 'not_enough_balance':
                   alert("No tienes fondos suficientes para realizar la operación.")
+                  break
+            case 'invalid_amount':
+                  alert("Monto inválido para realizar la operación.")
+                  break
+            case 'mismo_alias':
+                  alert("No se puede realizar una operacion de Transferencia o Pedido entre el mismo usuario.")
                   break
       }
 };

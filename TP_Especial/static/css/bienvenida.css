@@ -64,7 +64,14 @@
       font-weight: bold;
 }
 
-#boton-inicio {
+.footer {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+}
+
+#boton-inicio,
+#boton-pedidos {
       width: 100%;
       padding: 15px;
       background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
@@ -74,6 +81,40 @@
       font-size: 1.1rem;
       font-weight: 600;
       cursor: pointer;
+}
+
+#tabla-pedidos {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 0px;
+      font-size: 1rem;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+}
+
+.tabla-pedidos-unactive {
+      display: none;
+}
+
+#tabla-pedidos thead tr {
+      background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+}
+
+#mensaje {
+      white-space: normal;
+      word-break: break-word;
+}
+
+#tabla-pedidos th,
+#tabla-pedidos td {
+      padding: 5px;
+      color: black;
+      border: 1px solid black;
+      text-align: left;
+}
+
+#tabla-pedidos tbody tr {
+      background: white;
 }
 
 /* Botones para las operaciones */
@@ -86,7 +127,6 @@
 
 .operaciones-buttons button {
       flex: 1;
-      /* Ocupan el mismo espacio */
       padding: 10px;
       border: none;
       border-radius: 10px;
