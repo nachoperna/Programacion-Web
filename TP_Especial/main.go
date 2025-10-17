@@ -64,6 +64,9 @@ func main() {
 	// Procesamiento de TRANSFERENCIA
 	http.HandleFunc("/transfer", transfer)
 
+	// Procesamiento de PEDIDOS DE DINERO
+	http.HandleFunc("/moneyRequest", requestMoney)
+
 	fmt.Print("Servidor escuchando en puerto :8080")
 	http.ListenAndServe(":8080", nil)
 }
@@ -75,7 +78,7 @@ func showhome(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error al obtener datos de cuenta", http.StatusInternalServerError)
 		return
 	}
-	datos := map[string]string{
+	datos := map[string]interface{}{
 		"Alias":            values.Get("alias"),
 		"Balance":          balance.Balance,
 		"LastMovementType": balance.LastMovementType.String,
@@ -89,6 +92,8 @@ func showhome(w http.ResponseWriter, r *http.Request) {
 		datos["Name"] = values.Get("name")
 		datos["Email"] = values.Get("email")
 	}
+
+	datos["Mensajes"], err = queries.GetRequestsTo(ctx, datos["Alias"].(string))
 
 	// Servir el template con datos actualizados
 	tmp, err := template.ParseFiles("static/bienvenida.html")
@@ -201,6 +206,12 @@ func transfer(w http.ResponseWriter, r *http.Request) {
 		"Alias_otro":   r.FormValue("other_alias"),
 		"Amount":       r.FormValue("amount"),
 	}
+	if datos["Alias_propio"] == datos["Alias_otro"] {
+		redirectURL := fmt.Sprintf("/home?alias=%s&error=mismo_alias", datos["Alias_propio"])
+		http.Redirect(w, r, redirectURL, http.StatusSeeOther)
+		return
+	}
+
 	amount, err := strconv.ParseFloat(datos["Amount"], 64)
 	if err != nil {
 		http.Error(w, "Monto inválido", http.StatusBadRequest)
@@ -287,6 +298,34 @@ func enoughBalance(w http.ResponseWriter, alias string, monto float64) bool {
 	return true
 }
 
-// func newPassword(w http.ResponseWriter, r *http.Request){
-//
-// }
+func requestMoney(w http.ResponseWriter, r *http.Request) {
+	datos := map[string]string{
+		"Alias_propio": r.FormValue("from_alias"),
+		"Alias_otro":   r.FormValue("to_alias"),
+		"Amount":       r.FormValue("amount"),
+		"Mensaje":      r.FormValue("message"),
+	}
+
+	if datos["Alias_propio"] == datos["Alias_otro"] {
+		redirectURL := fmt.Sprintf("/home?alias=%s&error=mismo_alias", datos["Alias_propio"])
+		http.Redirect(w, r, redirectURL, http.StatusSeeOther)
+		return
+	}
+	amount, err := strconv.ParseFloat(datos["Amount"], 64)
+	if err != nil || amount < 0 {
+		redirectURL := fmt.Sprintf("/home?alias=%s&error=invalid_amount", datos["Alias_propio"])
+		http.Redirect(w, r, redirectURL, http.StatusSeeOther)
+		return
+	}
+	_, err = queries.InsertRequest(ctx, sqlc.InsertRequestParams{
+		FromAlias: datos["Alias_propio"],
+		ToAlias:   datos["Alias_otro"],
+		Amount:    datos["Amount"],
+		Message:   sql.NullString{String: datos["Mensaje"], Valid: true},
+	})
+
+	redirectURL := fmt.Sprintf("/home?alias=%s",
+		datos["Alias_propio"])
+
+	http.Redirect(w, r, redirectURL, http.StatusSeeOther)
+}
