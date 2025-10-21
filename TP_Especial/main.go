@@ -4,6 +4,7 @@ import (
 	sqlc "TP_Especial/db/sqlc"
 	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"log"
@@ -13,10 +14,19 @@ import (
 	"strconv"
 
 	_ "github.com/lib/pq"
+	"golang.org/x/text/language"
+	"golang.org/x/text/message"
 )
 
 var queries *sqlc.Queries
 var ctx context.Context
+
+type User struct {
+	Alias    string `json:"alias"`
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
 
 func main() {
 	// Servidor de archivos
@@ -67,6 +77,12 @@ func main() {
 	// Procesamiento de PEDIDOS DE DINERO
 	http.HandleFunc("/moneyRequest", requestMoney)
 
+	// Endpoint REST para tabla Users
+	http.HandleFunc("/users", usersHandler)
+
+	// Endpoint REST para tabla Users
+	http.HandleFunc("/users/", userHandler)
+
 	fmt.Print("Servidor escuchando en puerto :8080")
 	http.ListenAndServe(":8080", nil)
 }
@@ -78,9 +94,14 @@ func showhome(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error al obtener datos de cuenta", http.StatusInternalServerError)
 		return
 	}
+
+	// libreria para poder formatear un numero al formato español de puntos para miles y comas para decimales $100.000,00
+	printer := message.NewPrinter(language.Spanish)
+	balance_float, _ := strconv.ParseFloat(balance.Balance, 64)
+	balance_formateado := printer.Sprintf("%.2f", balance_float)
 	datos := map[string]interface{}{
 		"Alias":            values.Get("alias"),
-		"Balance":          balance.Balance,
+		"Balance":          balance_formateado,
 		"LastMovementType": balance.LastMovementType.String,
 	}
 
@@ -226,7 +247,8 @@ func transfer(w http.ResponseWriter, r *http.Request) {
 
 	_, err = queries.GetUser(ctx, datos["Alias_otro"])
 	if err == sql.ErrNoRows {
-		http.Error(w, "La alias destino no esta registrado en el sistema", http.StatusInternalServerError)
+		redirectURL := fmt.Sprintf("/home?alias=%s&error=alias_not_found", datos["Alias_propio"])
+		http.Redirect(w, r, redirectURL, http.StatusSeeOther)
 		return
 	}
 	err = queries.Transfer(ctx, sqlc.TransferParams{
@@ -328,4 +350,152 @@ func requestMoney(w http.ResponseWriter, r *http.Request) {
 		datos["Alias_propio"])
 
 	http.Redirect(w, r, redirectURL, http.StatusSeeOther)
+}
+
+func usersHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+		getUsers(w, r)
+	case http.MethodPost:
+		createUsers(w, r)
+	case http.MethodDelete:
+		deleteUsers(w, r)
+	default:
+		http.Error(w, "Metodo invalido", http.StatusMethodNotAllowed)
+	}
+}
+
+func userHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+		getUser(w, r)
+	case http.MethodPost:
+		createUsers(w, r)
+	case http.MethodPut:
+		updateUser(w, r)
+	case http.MethodDelete:
+		deleteUser(w, r)
+	default:
+		http.Error(w, "Metodo invalido", http.StatusMethodNotAllowed)
+	}
+}
+
+func getUsers(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-type", "application/json")
+	users, err := queries.ListUsers(ctx)
+	if err != nil {
+		http.Error(w, "Error al obtener usuarios", http.StatusNotFound)
+	}
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(users)
+}
+
+func createUsers(w http.ResponseWriter, r *http.Request) {
+	var users []User
+	var creados []sqlc.User
+	fallidos := make(map[string]string)
+
+	err := json.NewDecoder(r.Body).Decode(&users)
+	if err != nil {
+		http.Error(w, "Error: El JSON enviado es inválido.", http.StatusBadRequest)
+		return
+	}
+	for _, user := range users {
+		_, err := queries.GetUser(ctx, user.Alias)
+		if err == sql.ErrNoRows {
+			creado, err := queries.InsertUser(ctx, sqlc.InsertUserParams{
+				Alias:    user.Alias,
+				Name:     user.Name,
+				Email:    user.Email,
+				Password: user.Password})
+			if err != nil {
+				fallidos[user.Alias] = "Error al insertar usuario"
+			} else {
+				creados = append(creados, creado)
+			}
+		} else {
+			fallidos[user.Alias] = "Usuario ya registrado"
+		}
+	}
+
+	respuesta := map[string]interface{}{
+		"usuarios_creados":  creados,
+		"usuarios_fallidos": fallidos,
+	}
+
+	status := http.StatusOK
+	if len(creados) == 0 && len(fallidos) > 0 {
+		status = http.StatusBadRequest
+	} else if len(creados) > 0 && len(fallidos) == 0 {
+		status = http.StatusCreated
+	}
+	w.Header().Set("Content-type", "application/json")
+	w.WriteHeader(status)
+	json.NewEncoder(w).Encode(respuesta)
+}
+
+func deleteUsers(w http.ResponseWriter, r *http.Request) {
+	err := queries.DeleteAllUsers(ctx)
+	if err != nil {
+		http.Error(w, "Error eliminando todos los usuarios", http.StatusBadRequest)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+}
+
+func getUser(w http.ResponseWriter, r *http.Request) {
+	alias := r.URL.Query().Get("alias")
+	user, err := queries.GetUser(ctx, alias)
+	w.Header().Set("Content-type", "application/json")
+	if err == sql.ErrNoRows {
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode("El usuario no se encuentra registrado en el sistema")
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(user)
+}
+
+func deleteUser(w http.ResponseWriter, r *http.Request) {
+	alias := r.URL.Query().Get("alias")
+
+	_, err := queries.DeleteUser(ctx, alias)
+	if err == sql.ErrNoRows {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode("El usuario no se encuentra registrado en el sistema")
+		return
+	} else if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode("Error eliminando usuario.")
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func updateUser(w http.ResponseWriter, r *http.Request) {
+	var datos User
+	alias := r.URL.Query().Get("alias")
+
+	err := json.NewDecoder(r.Body).Decode(&datos)
+	if err != nil {
+		http.Error(w, "Error: El JSON enviado es inválido.", http.StatusBadRequest)
+		return
+	}
+	_, err = queries.UpdateUser(ctx, sqlc.UpdateUserParams{
+		Alias:    alias,
+		Name:     datos.Name,
+		Email:    datos.Email,
+		Password: datos.Password,
+	})
+	if err == sql.ErrNoRows {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode("El usuario no se encuentra registrado en el sistema")
+		return
+	} else if err != nil {
+		http.Error(w, "Error actualizando usuario.", http.StatusBadRequest)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
 }
