@@ -51,6 +51,15 @@ con el descuento en el balance de la cuenta origen y el deposito en el balance d
 funcionamiento lo vemos comprobando que el balance del usuario disminuyó si todo salió
 bien y haciendo un login en la cuenta a la que transferimos para verificar su nuevo balance.
 
+### Pedidos de dinero 
+En esta funcion el usuario puede solicitar un monto de dinero cualquiera (hasta $99.999.999,99) a cualquier alias
+registrado en la plataforma, junto con un mensaje. Luego en el mismo Home, el usuario que recibe el pedido podra
+visualizar con el boton "Pedidos de dinero" una tabla con toda la información necesaria de los pedidos que tenga, como
+el usuario que lo solicita, el monto, el mensaje y la fecha de la solicitud. 
+
+### Nueva contraseña
+El usuario podrá desde la pagina de Login cambiar su contraseña, **por ahora sin verificacion de identidad**.
+
 ### Ruta inválida
 En el caso de que el usuario ingrese una url no reconocida en el código de la página, se servirá un [ruta_invalida.html](./static/ruta_invalida.html) que le indique un error 404 significando que esa sección no se encuentra en la página, con la posibilidad de poder volver al inicio.
 
