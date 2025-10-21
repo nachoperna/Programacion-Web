@@ -12,46 +12,58 @@
       <div class="main-container">
             <div class="two-column-layout">
                   <div class="info-column">
+                        <div class="action-header">
+                              <div class="volver-inicio">
+                                    <a href="/">
+                                          <button type="button">
+                                                <img src="./img/back-svgrepo-com.svg" alt="Volver al inicio">
+                                          </button>
+                                    </a>
+                                    <h3>Volver al inicio</h3>
+                              </div>
+                              <div class="recarga">
+                                    <h3>Actualizar información</h3>
+                                    <button type="button" onclick="recargarPagina()">
+                                          <img src="./img/reload-svgrepo-com.svg" alt="Recargar página">
+                                    </button>
+                              </div>
+                        </div>
                         <div class="header">
                               <h2>Tu Información, {{.Name}}</h2> 
-                              <button type="button" class="button-reload" onclick="recargarPagina()">
-                                    <img src="./img/reload-svgrepo-com.svg" alt="Recargar página">
-                              </button>
                         </div>
-                        <div class="tarjetas">
-                              <label>Balance</label>
-                              <span id="balance">
-                                    {{if .Balance}}
-                                    $ {{.Balance}} ARS
-                                    {{else}}
-                                    $ 0.00 ARS
-                                    {{end}}
-                              </span>
+                        <div class="info-principal">
+                              <div class="tarjeta-balance">
+                                    <label>Balance</label>
+                                    <span id="balance">
+                                          {{if .Balance}}
+                                          $ {{.Balance}} ARS
+                                          {{else}}
+                                          $ 0.00 ARS
+                                          {{end}}
+                                    </span>
+                              </div>
+                              <div class="tarjetas">
+                                    <div class="info">
+                                          <label>Alias</label>
+                                          <span>{{.Alias}}</span>
+                                    </div>
+                                    <div class="info">
+                                          <label>Email</label>
+                                          <span>{{.Email}}</span>
+                                    </div>
+                                    <div class="info">
+                                          <label>Ultimo movimiento</label>
+                                          <span>
+                                                {{if .LastMovementType}}
+                                                {{.LastMovementType}}
+                                                {{else}}
+                                                - 
+                                                {{end}}
+                                          </span>
+                                    </div>
+                              </div>
                         </div>
-                        <div class="tarjetas">
-                              <label>Alias</label>
-                              <span>{{.Alias}}</span>
-                        </div>
-                        <div class="tarjetas">
-                              <label>Email</label>
-                              <span>{{.Email}}</span>
-                        </div>
-                        <div class="tarjetas">
-                              <label>Último movimiento</label>
-                              <span>
-                                    {{if .LastMovementType}}
-                                    {{.LastMovementType}}
-                                    {{else}}
-                                    - 
-                                    {{end}}
-                              </span>
-                        </div>
-                        
                         <div class="footer">
-                              <a  href="/">
-                                    <button id="boton-inicio" type="">Volver al inicio</button>
-                              </a>
-
                               <a>
                                     <button id="boton-pedidos" type="button" onclick="displayPedidos()">Pedidos de dinero</button>
                               </a>
@@ -87,7 +99,7 @@
                               <button type="button" onclick="mostrarFormulario('form-deposito')">Depositar</button>
                               <button type="button" onclick="mostrarFormulario('form-retiro')">Retirar</button>
                               <button type="button" onclick="mostrarFormulario('form-transferencia')">Transferir</button>
-                              <button type="button" onclick="mostrarFormulario('form-pedido')">Pedir dinero</button>
+                              <button type="button" onclick="mostrarFormulario('form-pedido')">Pedir</button>
                         </div>
 
                         <div id="form-deposito" class="operation-form form-visible">

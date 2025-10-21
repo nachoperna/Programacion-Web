@@ -18,13 +18,12 @@ body {
 }
 
 .main-container {
-      width: 100%;
-      max-width: 1200px;
+      /* width: 100%; */
+      min-width: 1300px;
 }
 
 /* Layout de dos columnas */
-.two-column-layout,
-.bienvenida {
+.two-column-layout {
       display: flex;
       border-radius: 15px;
       overflow: hidden;
@@ -80,8 +79,7 @@ body {
 }
 
 /* Columna de formulario (rosa) */
-.form-column,
-.bienvenida {
+.form-column {
       flex: 2;
       background-color: #FFA0B5;
       padding: 40px 40px;
