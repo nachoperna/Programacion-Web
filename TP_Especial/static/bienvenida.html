@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tu cuenta</title>
-    <link href="./css/generales.css" rel="stylesheet">
-    <link href="./css/index.css" rel="stylesheet">
-    <link href="./css/bienvenida.css" rel="stylesheet">
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Tu cuenta</title>
+      <link href="./css/generales.css" rel="stylesheet">
+      <link href="./css/index.css" rel="stylesheet">
+      <link href="./css/bienvenida.css" rel="stylesheet">
+      <link rel="icon" type="image/svg" href="./img/400mm rosa.svg">
 </head>
 <body>
       <div class="main-container">
@@ -65,31 +66,15 @@
                         </div>
                         <div class="footer">
                               <a>
-                                    <button id="boton-pedidos" type="button" onclick="displayPedidos()">Pedidos de dinero</button>
+                                    <button id="pedidos-recibidos" type="button" >Pedidos recibidos</button>
+                              </a>
+                              <a>
+                                    <button id="pedidos-realizados" type="button" >Pedidos realizados</button>
                               </a>
                         </div>
-                        <table id="tabla-pedidos" class="tabla-pedidos-unactive">
-                              <thead>
-                                    <tr>
-                                          <th>Pedidor</th>
-                                          <th>Monto</th>
-                                          <th>Mensaje</th>
-                                          <th>Dia</th>
-                                          <th>Hora</th>
-                                    </tr>
-                              </thead>
-                              <tbody>
-                                    {{range .Mensajes}}
-                                    <tr>
-                                          <td>{{.FromAlias}}</td>
-                                          <td>$ {{.Amount}}</td>
-                                          <td id="mensaje">{{.Message.String}}</td>
-                                          <td>{{.Day}}</td>
-                                          <td>{{.Time}}</td>
-                                    </tr>
-                                    {{end}} 
-                              </tbody>
-                        </table>
+                        <div id="tabla-pedidos-container" class="oculto">
+                              
+                        </div>
                   </div>
 
                   <div class="form-column">
