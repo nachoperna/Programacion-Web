@@ -131,7 +131,7 @@
 }
 
 #boton-inicio,
-#boton-pedidos {
+.footer button {
       width: 100%;
       padding: 15px;
       background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
@@ -143,6 +143,7 @@
       cursor: pointer;
 }
 
+#tabla-pedidos-container,
 #tabla-pedidos {
       width: 100%;
       border-collapse: collapse;
@@ -152,7 +153,7 @@
       border-radius: 22px;
 }
 
-.tabla-pedidos-unactive {
+.oculto {
       display: none;
 }
 
@@ -195,6 +196,17 @@
 
 #tabla-pedidos tbody tr:nth-child(even) {
       background-color: lightgrey;
+}
+
+.descartar-pedido-recibido,
+.descartar-pedido-realizado {
+      cursor: pointer;
+      color: red;
+}
+
+.descartar-pedido-recibido:hover,
+.descartar-pedido-realizado:hover {
+      text-decoration: underline;
 }
 
 .operaciones-buttons {
