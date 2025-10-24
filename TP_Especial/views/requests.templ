@@ -1,0 +1,77 @@
+package views 
+
+import sqlc "TP_Especial/db/sqlc"
+
+templ GetRequestsTo(pedidos []sqlc.GetRequestsToRow) {
+	<table id="tabla-pedidos" class="tabla-pedidos-unactive">
+		<thead>
+			<tr>
+				<th>Pedidor</th>
+				<th>Monto</th>
+				<th>Mensaje</th>
+				<th>Dia</th>
+				<th>Hora</th>
+				<th>Accion</th>
+			</tr>
+		</thead>
+		<tbody>
+			for _, pedido := range pedidos {
+				<tr>
+					<td>{ pedido.FromAlias }</td>
+					<td>$ { pedido.Amount }</td>
+					<td>{ pedido.Message.String }</td>
+					<td>{ pedido.Day }</td>
+					<td>{ pedido.Time }</td>
+					<td>
+						<a
+							class="descartar-pedido-recibido"
+							data-alias-from={ pedido.FromAlias }
+							data-alias-to={ pedido.ToAlias }
+						>
+							Descartar
+						</a>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+
+templ GetRequestsFrom(pedidos []sqlc.GetRequestsFromRow) {
+	<table id="tabla-pedidos" class="tabla-pedidos-unactive">
+		<thead>
+			<tr>
+				<th>Hacia</th>
+				<th>Monto</th>
+				<th>Mensaje</th>
+				<th>Dia</th>
+				<th>Hora</th>
+				<th>Accion</th>
+			</tr>
+		</thead>
+		<tbody>
+			for _, pedido := range pedidos {
+				<tr>
+					<td>{ pedido.ToAlias }</td>
+					<td>$ { pedido.Amount }</td>
+					<td>{ pedido.Message.String }</td>
+					<td>{ pedido.Day }</td>
+					<td>{ pedido.Time }</td>
+					<td>
+						<a class="descartar-pedido-realizado" data-aliasTo={ pedido.ToAlias }>
+							Descartar
+						</a>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+
+templ SinPedidos(recibidos bool) {
+	if recibidos {
+		<h3>No tienes pedidos de dinero recibidos por el momento</h3>
+	} else {
+		<h3>No tienes pedidos de dinero realizados por el momento</h3>
+	}
+}
