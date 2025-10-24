@@ -46,8 +46,15 @@ migrate-down:
 migrate-reset:
 	migrate -path $(MIGRATIONS_DIR) -database "$(DB_URL)" down -all
 
-# Reconstruir la base desde cero: baja, sube, espera, aplica migraciones y genera código
-reset: down up wait migrate-up sqlc
 
-.PHONY: sqlc up down wait migrate-create migrate-up migrate-down migrate-reset reset
+templ:
+	templ generate
+
+inserts:
+	hurl --test inserts.hurl
+
+# Reconstruir la base desde cero: baja, sube, espera, aplica migraciones y genera código
+reset: down up wait migrate-up sqlc templ
+
+.PHONY: sqlc up down wait migrate-create migrate-up migrate-down migrate-reset templ reset
 
