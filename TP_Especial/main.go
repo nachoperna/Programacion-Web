@@ -6,16 +6,15 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	_ "github.com/lib/pq"
+	"golang.org/x/text/language"
+	"golang.org/x/text/message"
 	"html/template"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strconv"
-
-	_ "github.com/lib/pq"
-	"golang.org/x/text/language"
-	"golang.org/x/text/message"
 )
 
 var queries *sqlc.Queries
@@ -26,6 +25,13 @@ type User struct {
 	Name     string `json:"name"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
+}
+
+type Request struct {
+	FromAlias string `json:"from_alias"`
+	ToAlias   string `json:"to_alias"`
+	Amount    string `json:"amount"`
+	Message   string `json:"message"`
 }
 
 func main() {
@@ -83,6 +89,16 @@ func main() {
 	// Endpoint REST para tabla Users
 	http.HandleFunc("/users/", userHandler)
 
+	// Endpoint REST para tabla Money Requests
+	http.HandleFunc("/requests", requestsHandler)
+
+	// Procesamiento de TABLA DE PEDIDOS DE DINERO PARA MOSTRRAR EN HOME
+	http.HandleFunc("/listRequestsTo", listRequestsTo)
+	http.HandleFunc("/listRequestsFrom", listRequestsFrom)
+
+	// Procesamiento de TABLA DE PEDIDOS DE DINERO PARA MOSTRRAR EN HOME
+	http.HandleFunc("/deleteRequestsTo", deleteRequestsTo)
+
 	fmt.Print("Servidor escuchando en puerto :8080")
 	http.ListenAndServe(":8080", nil)
 }
@@ -114,7 +130,7 @@ func showhome(w http.ResponseWriter, r *http.Request) {
 		datos["Email"] = values.Get("email")
 	}
 
-	datos["Mensajes"], err = queries.GetRequestsTo(ctx, datos["Alias"].(string))
+	// datos["Mensajes"], err = queries.GetRequestsTo(ctx, datos["Alias"].(string))
 
 	// Servir el template con datos actualizados
 	tmp, err := template.ParseFiles("static/bienvenida.html")
@@ -380,6 +396,17 @@ func userHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func requestsHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+	case http.MethodPost:
+		createRequest(w, r)
+	case http.MethodDelete:
+	default:
+		http.Error(w, "Metodo invalido", http.StatusMethodNotAllowed)
+	}
+}
+
 func getUsers(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-type", "application/json")
 	users, err := queries.ListUsers(ctx)
@@ -498,4 +525,108 @@ func updateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
+}
+
+func listRequestsTo(w http.ResponseWriter, r *http.Request) {
+	alias := r.URL.Query().Get("to_alias")
+	pedidos, err := queries.GetRequestsTo(ctx, sqlc.GetRequestsToParams{
+		ToAlias:   alias,
+		SortBy:    "amount",
+		SortOrder: "desc",
+	})
+	if len(pedidos) == 0 {
+		sinPedidos(true).Render(ctx, w)
+		return
+	}
+	if err != nil {
+		http.Error(w, "Error obteniendo requests", http.StatusNotFound)
+		return
+	}
+	getRequestsTo(pedidos).Render(ctx, w)
+}
+
+func listRequestsFrom(w http.ResponseWriter, r *http.Request) {
+	alias := r.URL.Query().Get("from_alias")
+	pedidos, err := queries.GetRequestsFrom(ctx, sqlc.GetRequestsFromParams{
+		FromAlias: alias,
+		SortBy:    "amount",
+		SortOrder: "desc",
+	})
+	if len(pedidos) == 0 {
+		sinPedidos(false).Render(ctx, w)
+		return
+	}
+	if err != nil {
+		http.Error(w, "Error obteniendo requests", http.StatusNotFound)
+		return
+	}
+	getRequestsFrom(pedidos).Render(ctx, w)
+}
+
+func deleteRequestsTo(w http.ResponseWriter, r *http.Request) {
+	from_alias := r.URL.Query().Get("from_alias")
+	to_alias := r.URL.Query().Get("to_alias")
+	_, err := queries.DeleteRequest(ctx, sqlc.DeleteRequestParams{
+		FromAlias: from_alias,
+		ToAlias:   to_alias,
+	})
+	if err != nil {
+		http.Error(w, "Error obteniendo requests", http.StatusNotFound)
+		return
+	}
+	listRequestsTo(w, r)
+}
+
+func createRequest(w http.ResponseWriter, r *http.Request) {
+	// Decodifica el arreglo de objetos JSON del cuerpo de la petición
+	var requests []Request
+	err := json.NewDecoder(r.Body).Decode(&requests)
+	if err != nil {
+		http.Error(w, "Error: El JSON enviado es inválido o no es un arreglo.", http.StatusBadRequest)
+		return
+	}
+
+	// Prepara slices para llevar un registro de las operaciones
+	var creados []sqlc.MoneyRequest
+	fallidos := make(map[string]string)
+
+	// Itera sobre cada pedido recibido
+	for _, req := range requests {
+		// Crea el pedido en la base de datos
+		creado, err := queries.InsertRequest(ctx, sqlc.InsertRequestParams{
+			FromAlias: req.FromAlias,
+			ToAlias:   req.ToAlias,
+			Amount:    req.Amount,
+			Message:   sql.NullString{String: req.Message, Valid: true}, // Pasamos el sql.NullString directamente
+		})
+
+		if err != nil {
+			// Si hay un error, lo registramos
+			errorKey := fmt.Sprintf("De '%s' a '%s'", req.FromAlias, req.ToAlias)
+			fallidos[errorKey] = err.Error()
+		} else {
+			// Si es exitoso, lo añadimos a la lista de creados
+			creados = append(creados, creado)
+		}
+	}
+
+	// Prepara la respuesta JSON
+	respuesta := map[string]interface{}{
+		"pedidos_creados":  creados,
+		"pedidos_fallidos": fallidos,
+	}
+
+	// Determina el código de estado HTTP adecuado
+	status := http.StatusOK
+	if len(creados) > 0 && len(fallidos) == 0 {
+		status = http.StatusCreated // Todo salió bien
+	} else if len(creados) == 0 && len(fallidos) > 0 {
+		status = http.StatusBadRequest // Ninguno se pudo crear
+	} else if len(creados) > 0 && len(fallidos) > 0 {
+		status = http.StatusMultiStatus // Algunos salieron bien, otros no
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	json.NewEncoder(w).Encode(respuesta)
 }
