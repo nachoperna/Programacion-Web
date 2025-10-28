@@ -20,6 +20,14 @@ up:
 # Apagar servicios y borrar volúmenes (datos)
 down:
 	docker-compose down -v
+	@PID=$$(lsof -t -i :8080); \
+	if [ -n "$$PID" ]; then \
+		echo "Proceso encontrado (PID: $$PID). Deteniendo..."; \
+		kill $$PID; \
+	else \
+		echo "No se encontró ningún proceso en el puerto 8080."; \
+	fi
+	@echo "Servidor y puerto 8080 cerrado"
 
 # Esperar a que Postgres esté listo
 wait:
@@ -53,8 +61,17 @@ templ:
 inserts:
 	hurl --test inserts.hurl
 
+test:
+	hurl --test tests.hurl
+
+go:
+	go run . &
+	@sleep 2
+	hurl --test tests.hurl
 # Reconstruir la base desde cero: baja, sube, espera, aplica migraciones y genera código
 reset: down up wait migrate-up sqlc templ
 
-.PHONY: sqlc up down wait migrate-create migrate-up migrate-down migrate-reset templ reset
+run: reset go 
+
+.PHONY: sqlc up down wait migrate-create migrate-up migrate-down migrate-reset templ reset go run test
 
