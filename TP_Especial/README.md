@@ -1,4 +1,5 @@
 # CandyPay
+
 ## Integrantes
 - Ignacio Agustin Perna
 
@@ -10,15 +11,46 @@ Este proyecto consta de una billetera virtual que tendrá todas las funcionalida
 - Pedir préstamos con fechas de pago
 - Invertir dinero y generar rendimientos
 
-## Modo de Uso
+## Instrucciones de Uso
 1. Abrir una terminal localizada dentro de la carpeta donde se encuentra este archivo README.
-2. Ejecutar el comando **make reset** que hará la baja del contenedor de Docker, borrando todos los datos de la base,
+
+2. Ejecutar el comando **make run** que hará la baja del contenedor de Docker, borrando todos los datos de la base,
    para luego levantarlo y migrar todos los cambios hechos hasta el momento para contener la última versión de la base
 con la herramienta golang-migrate, y generar el código sqlc para poder conectar nuestra base de datos con funciones de
-Go.
-3. Ejecutar el comando **go run main.go** 
-4. Dirígete a un navegador web y pon en el buscador **localhost:8080**
-5. Ya podés acceder a las funciones actuales.
+Go. Además genera el código Go correspondiente a los templates usados y 
+      * Baja del contenedor Docker correspondiente borrando todos los datos de la base.
+      * Levantar el contenedor con la base.
+      * Migrar todos los cambios hechos hasta el momento para contener la ultima version de la base usando golang-migrate
+      * Generar código sqlc para poder conectar nuestra base de datos con funciones Go.
+      * Generar código Go correspondiente a los templates html usados.
+      * Ejecutar todos los archivos Go y escuchar en el puerto 8080 ** *EN SEGUNDO PLANO*  ** para poder ejecutar los
+      test en el mismo comando.
+      * Insertar datos de prueba con el archivo inserts.hurl donde se insertan 3 usuarios junto con 3 pedidos de dinero
+        hechos hacia el usuario alias1.
+
+3. Dirigirte hacia el navegador web y abrir localhost:8080.
+
+4. Para finalizar la ejecución de la aplicacion y dar de baja el contenedor docker junto con la base de datos debe
+   ejecutar el comando **make down** 
+
+5. **Aclaración:** Si usted ejecuta esta aplicación en un sistema operativo Windows puede que el comando para cerrar el
+   puerto 8080 no le funcione porque se realiza con comandos Bash. En ese caso, debe cerrar el puerto por su cuenta.
+
+## Estructura de la Base de Datos
+En primer momento la base se organiza en dos tablas principales:
+
+- Users: donde guardamos información básica del usuario que servirá de identificación en todos los momentos de ingreso a
+  la plataforma, constatando los datos ingresados con los guardados en la Base para su autenticación.
+
+- Accounts: donde se guarda toda la información monetaria del usuario, vinculado con sus datos a través del alias como
+clave primaria.
+
+- Money_requests: donde se almacenan todos los pedidos de dinero que hacen los usuarios con un alias origen y otro
+destino, junto con el monto pedido y un mensaje.
+
+- Triggers: se tienen por el momento dos triggers que se activan, cuando el usuario se registra en la base se crea
+automaticamente una cuenta con los valores por defecto y el alias registrado, y cuando se borra un usuario del sistema,
+se borra automaticamente la cuenta asociada que tenia ese usuario.
 
 ## Funcionalidades Actuales
 ### Servicio de página principal
@@ -63,17 +95,17 @@ El usuario podrá desde la pagina de Login cambiar su contraseña, **por ahora s
 ### Ruta inválida
 En el caso de que el usuario ingrese una url no reconocida en el código de la página, se servirá un [ruta_invalida.html](./static/ruta_invalida.html) que le indique un error 404 significando que esa sección no se encuentra en la página, con la posibilidad de poder volver al inicio.
 
-### Testing de Base de Datos
-Es posible ejecutar un codigo de Testing implementando el comando **go test -v** en la terminal ubicada en la carpeta
-actual y podemos revisar en el codigo [db_test.go](./db_test.go) como hacemos una conexión a la base de datos para
-ejecutar operaciones básicas donde registramos usuarios en nuestra plataforma, actualizamos sus datos, los listamos, y
-borramos con éxito, se hacen depósitos, retiros y transferencias con éxito.
+### Visualización de pedidos dinero
+Tenemos dos botones en el home donde podemos ver una tabla donde figuran los pedidos de dinero que le llegaron al
+usuario y los que realizo el mismo, junto con toda la informacion necesaria y un boton de descarte que elimina esa
+peticion en particular.
 
+## TP3
 ### Lógica API REST
-Para probar la lógica de negocio de la app podemos ejecutar un script de tests con la herramienta HURL donde tenemos una
-lista de peticiones a realizar hacia los endpoints **/users** y **/users/**  en el archivo **requests.hurl** y ejecutando el comando **hurl --test requests.hurl**  donde podemos
+Para probar la lógica de negocio de la app podemos ejecutar el comando **make test** que corre un script de tests con la herramienta HURL donde tenemos una
+lista de peticiones a realizar hacia los endpoints **/users** y **/users/**  en el archivo **tests.hurl** donde podemos
 aplicar reglas generales a todos los usuarios o en /users o especificar algun usuario en particular para la accion del
-metodo que especificado.
+metodo especificado.
 
 ####  POST http://localhost:8080/users
 - La funcion que maneja esta peticion decodifica todos los objetos json en una estructura correspondiente a este tipo de
@@ -172,17 +204,31 @@ hubo error al eliminar.
             DELETE http://localhost:8080/users/?alias=alias1 
             HTTP 204
 
+## TP4 
+### Comunicación de API con JavaScript
+La comunicacion de mi API con JavaScript se realiza a través de la tabla de pedidos de dinero, donde en el home al
+ingresar con una cuenta de usuario registrado podemos ver pedidos de dinero recibidos y realizados en los botones
+inferiores de la tarjeta izquierda.
+Esta tabla de pedidos se encuentra creada en html como un template de Go en el archivo **requests.templ** para poder
+entregar únicamente esa tabla al usuario cuando la quiera ver, sin necesidad de recargar la pagina entera.
+Para lograr todo esto, primero nos aseguramos que el DOM se encuentre totalmente cargado en el home para luego agregar
+un eventListener a los botones que muestran las tablas, donde al presionarlos se realiza un fetch desde javascript al
+endpoint **/listRequestsFrom** o **/listRequestsTo** dependiendo si el usuario desea ver los pedidos recibidos o realizados por
+él, atrapando los errores de respuestas correspondientes por parte del servidor y en caso de éxito completando esa parte
+de la página que se encontraba oculta con la tabla recibida y luego haciendola visible al usuario.
 
-## Estructura de la Base de Datos
-En primer momento la base se organiza en dos tablas principales:
+### Implementacion del borrado 
+Para lograr eliminar un elemento dinamicamente del DOM, en mi trabajo esto lo hago agregando a cada peticion de dinero
+dentro de la tabla de peticiones que puede visualizar el usuario anteriormente, una opcion de **Descartar** que al
+presionarla elimina la fila correspondiente a esa peticion en particular de la tabla. Esto se logró agregando un
+eventListener al container de la tabla general y preguntando si ese click se realizó sobre el enlace de descarte, para
+luego prevenir el comportamiento por defecto y hacer un fetch al endpoint **/deleteRequestTo** con los datos especificos
+de esa peticion para su eliminacion de la base de datos y posterior recarga unicamente de la tabla actual con los datos
+actualizados.
 
-- Users: donde guardamos información básica del usuario que servirá de identificación en todos los momentos de ingreso a
-  la plataforma, constatando los datos ingresados con los guardados en la Base para su autenticación.
-
-- Accounts: donde se guarda toda la información monetaria del usuario, vinculado con sus datos a través del alias como
-clave primaria.
-
-- Triggers: se tienen por el momento dos triggers que se activan, cuando el usuario se registra en la base se crea
-automaticamente una cuenta con los valores por defecto y el alias registrado, y cuando se borra un usuario del sistema,
-se borra automaticamente la cuenta asociada que tenia ese usuario.
-
+### Correcto funcionamiento
+Para constatar el correcto funcionamiento de la creacion y borrado dinamico de objetos en el DOM podemos centrarnos en
+nuestro /home, abrir las opciones de inspeccion del navegador, abrir la opcion de **Network** y luego clickear los
+botones de **Pedidos recibidos** o **Pedidos realizados** donde veremos en la inspeccion que se ralizo un fetch y si
+entramos podemos ver que la respuesta recibida por el servidor es tan solo la tabla o un titulo html que indica que el
+usuario no tiene pedidos por el momento.   
