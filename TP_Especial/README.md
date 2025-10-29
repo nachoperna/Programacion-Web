@@ -8,16 +8,14 @@ Este proyecto consta de una billetera virtual que tendrá todas las funcionalida
 - Creación de cuenta con formularios de registro e inicios de sesión posteriores
 - Depositar y retirar dinero
 - Transferr a cualquier usuario con un alias registrado
+- Pedir dinero a otro usuario
 - Pedir préstamos con fechas de pago
 - Invertir dinero y generar rendimientos
 
 ## Instrucciones de Uso
 1. Abrir una terminal localizada dentro de la carpeta donde se encuentra este archivo README.
 
-2. Ejecutar el comando **make run** que hará la baja del contenedor de Docker, borrando todos los datos de la base,
-   para luego levantarlo y migrar todos los cambios hechos hasta el momento para contener la última versión de la base
-con la herramienta golang-migrate, y generar el código sqlc para poder conectar nuestra base de datos con funciones de
-Go. Además genera el código Go correspondiente a los templates usados y 
+2. Ejecutar el comando **make run** que hará las siguientes acciones:
       * Baja del contenedor Docker correspondiente borrando todos los datos de la base.
       * Levantar el contenedor con la base.
       * Migrar todos los cambios hechos hasta el momento para contener la ultima version de la base usando golang-migrate
@@ -112,6 +110,7 @@ metodo especificado.
   datos.
 - Se debe especificar obligatoriamente un **Content-type: application/json** seguido de un arreglo de objetos JSON donde
   se especifiquen los usuarios que se quieran registrar en el sistema. Por ejemplo:
+  
             POST http://localhost:8080/users
             Content-type: application/json
             [
