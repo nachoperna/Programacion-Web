@@ -98,6 +98,13 @@ Tenemos dos botones en el home donde podemos ver una tabla donde figuran los ped
 usuario y los que realizo el mismo, junto con toda la informacion necesaria y un boton de descarte que elimina esa
 peticion en particular.
 
+### Ordenamiento de pedidos de dinero
+Al visualizar la tabla de pedidos de dinero, por defecto se encuentra ordenada segun el monto de los pedidos en forma
+descendente, con su flecha que lo indica, pero si clickeamos las columnas de **Pedidor** o **Hacia**, **Monto** y
+**Dia** vamos a poder re ordenar la tabla segun estas categorias en formato ascendente o descendente por monto u orden
+alfabético, de manera dinámica donde por el servidor viaja el pedido de ordenamiento a través de un fetch a un endpoint
+y la base de datos devuelve la tabla ordenada, la cual el servidor inserta en el html sin alterar su entorno.
+
 ## TP3
 ### Lógica API REST
 Para probar la lógica de negocio de la app podemos ejecutar el comando **make test** que corre un script de tests con la herramienta HURL donde tenemos una
@@ -110,7 +117,7 @@ metodo especificado.
   datos.
 - Se debe especificar obligatoriamente un **Content-type: application/json** seguido de un arreglo de objetos JSON donde
   se especifiquen los usuarios que se quieran registrar en el sistema. Por ejemplo:
-  
+
             POST http://localhost:8080/users
             Content-type: application/json
             [
