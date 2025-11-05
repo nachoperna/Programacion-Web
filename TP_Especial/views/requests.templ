@@ -6,10 +6,10 @@ templ GetRequestsTo(pedidos []sqlc.GetRequestsToRow) {
 	<table id="tabla-pedidos" class="tabla-pedidos-unactive">
 		<thead>
 			<tr>
-				<th>Pedidor</th>
-				<th>Monto</th>
+				<th class="ordenable-to" data-sort-by="from_alias">Pedidor</th>
+				<th class="ordenable-to sort-desc" data-sort-by="amount">Monto</th>
 				<th>Mensaje</th>
-				<th>Dia</th>
+				<th class="ordenable-to" data-sort-by="day">Dia</th>
 				<th>Hora</th>
 				<th>Accion</th>
 			</tr>
@@ -41,10 +41,10 @@ templ GetRequestsFrom(pedidos []sqlc.GetRequestsFromRow) {
 	<table id="tabla-pedidos" class="tabla-pedidos-unactive">
 		<thead>
 			<tr>
-				<th>Hacia</th>
-				<th>Monto</th>
+				<th class="ordenable-from" data-sort-by="to_alias">Hacia</th>
+				<th class="ordenable-from sort-desc" data-sort-by="amount">Monto</th>
 				<th>Mensaje</th>
-				<th>Dia</th>
+				<th class="ordenable-from" data-sort-by="day">Dia</th>
 				<th>Hora</th>
 				<th>Accion</th>
 			</tr>

@@ -19,10 +19,16 @@ type Request struct {
 
 func (h *Handler) ListRequestsTo(w http.ResponseWriter, r *http.Request) {
 	alias := r.URL.Query().Get("to_alias")
+	sort_by := r.URL.Query().Get("sort_by")
+	sort_order := r.URL.Query().Get("sort_order")
+	if sort_by == "" {
+		sort_by = "amount"
+		sort_order = "desc"
+	}
 	pedidos, err := h.queries.GetRequestsTo(h.ctx, sqlc.GetRequestsToParams{
 		ToAlias:   alias,
-		SortBy:    "amount",
-		SortOrder: "desc",
+		SortBy:    sort_by,
+		SortOrder: sort_order,
 	})
 	if len(pedidos) == 0 {
 		views.SinPedidos(true).Render(h.ctx, w)
@@ -37,10 +43,16 @@ func (h *Handler) ListRequestsTo(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) ListRequestsFrom(w http.ResponseWriter, r *http.Request) {
 	alias := r.URL.Query().Get("from_alias")
+	sort_by := r.URL.Query().Get("sort_by")
+	sort_order := r.URL.Query().Get("sort_order")
+	if sort_by == "" {
+		sort_by = "amount"
+		sort_order = "desc"
+	}
 	pedidos, err := h.queries.GetRequestsFrom(h.ctx, sqlc.GetRequestsFromParams{
 		FromAlias: alias,
-		SortBy:    "amount",
-		SortOrder: "desc",
+		SortBy:    sort_by,
+		SortOrder: sort_order,
 	})
 	if len(pedidos) == 0 {
 		views.SinPedidos(false).Render(h.ctx, w)
