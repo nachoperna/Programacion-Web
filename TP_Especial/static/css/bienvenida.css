@@ -168,6 +168,19 @@
 
 #tabla-pedidos th {
       color: white;
+      cursor: pointer;
+}
+
+#tabla-pedidos th:hover {
+      background: #521f9f;
+}
+
+th.sort-asc::after {
+      content: " 🡩";
+}
+
+th.sort-desc::after {
+      content: " 🡫";
 }
 
 #tabla-pedidos td {
