@@ -11,35 +11,7 @@
       <script src="https://unpkg.com/htmx.org@1.9.10"></script>
       <script src="./js/script.js"> </script>
 </head>
-<body
-      hx-on:load="
-            const urlParams = new URLSearchParams(window.location.search);
-            const error = urlParams.get('error');
-
-            switch (error) {
-                  case 'alias_not_found':
-                        alert('El Alias ingresado no se encuentra registrado en la base');
-                        break
-                  case 'password_incorrect':
-                        alert('La contraseña ingresada es incorrecta')
-                        break
-                  case 'deposit_ok':
-                        alert('El depósito se realizó correctamente')
-                        break
-                  case 'alias_usado':
-                        alert('El alias ingresado ya se encuentra registrado en la base.')
-                        break
-                  case 'not_enough_balance':
-                        alert('No tienes fondos suficientes para realizar la operación.')
-                        break
-                  case 'invalid_amount':
-                        alert('Monto inválido para realizar la operación.')
-                        break
-                  case 'mismo_alias':
-                        alert('No se puede realizar una operacion de Transferencia o Pedido entre el mismo usuario.')
-                        break
-            }"
-      >
+<body>
       <div class="main-container">
             <div class="two-column-layout">
                   <div class="info-column">
@@ -129,25 +101,29 @@
                                     hx-on:click=
                                           "document.querySelector('.form-visible').classList.remove('form-visible');
                                            document.getElementById('form-deposito').classList.add('form-visible');"                                    
-                                    >Depositar</button>
+                                    >Depositar
+                              </button>
                               <button 
                                     type="button"
                                     hx-on:click=
                                           "document.querySelector('.form-visible').classList.remove('form-visible');
                                            document.getElementById('form-retiro').classList.add('form-visible');"
-                                    >Retirar</button>
+                                    >Retirar
+                              </button>
                               <button 
                                     type="button" 
                                     hx-on:click=
                                           "document.querySelector('.form-visible').classList.remove('form-visible');
                                            document.getElementById('form-transferencia').classList.add('form-visible');"
-                                    >Transferir</button>
+                                    >Transferir
+                              </button>
                               <button 
                                     type="button" 
                                     hx-on:click=
                                           "document.querySelector('.form-visible').classList.remove('form-visible');
                                            document.getElementById('form-pedido').classList.add('form-visible');"
-                                    >Pedir</button>
+                                    >Pedir
+                              </button>
                         </div>
 
                         <div id="form-deposito" class="operation-form form-visible">
@@ -240,26 +216,5 @@
                   </div>
             </div>
       </div>
-      <script>
-            function togglePedidos(event) {
-                  const container = document.getElementById('tabla-pedidos-container');
-
-                  const oculto = container.classList.contains('oculto');
-
-                  if (oculto) {
-                        // Si está oculto → permitir el request (NO hacemos preventDefault)
-                        // HTMX hará el hx-get, y luego vos podés mostrarlo con afterSwap si querés
-                        alert('oculto');
-                        container.classList.remove('oculto');
-                  } else {
-                        alert('mostrado')
-                        // Si está visible → cancelar el request y ocultar el contenido
-                        event.preventDefault();
-                        container.classList.add('oculto');
-                        container.innerHTML = "";
-                  }
-            }
-            window.togglePedidos = togglePedidos;
-      </script>
 </body>
 </html>
