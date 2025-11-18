@@ -29,6 +29,16 @@ down:
 	fi
 	@echo "Servidor y puerto 8080 cerrado"
 
+go_down:
+	@PID=$$(lsof -t -i :8080); \
+	if [ -n "$$PID" ]; then \
+		echo "Proceso encontrado (PID: $$PID). Deteniendo..."; \
+		kill $$PID; \
+	else \
+		echo "No se encontró ningún proceso en el puerto 8080."; \
+	fi
+	@echo "Servidor y puerto 8080 cerrado"
+
 # Esperar a que Postgres esté listo
 wait:
 	@echo "Esperando a que Postgres arranque..."
@@ -67,11 +77,10 @@ test:
 go:
 	go run . &
 	@sleep 2
-	hurl --test tests.hurl
 # Reconstruir la base desde cero: baja, sube, espera, aplica migraciones y genera código
 reset: down up wait migrate-up sqlc templ
 
-run: reset go 
+run: reset go test 
 
 .PHONY: sqlc up down wait migrate-create migrate-up migrate-down migrate-reset templ reset go run test
 
