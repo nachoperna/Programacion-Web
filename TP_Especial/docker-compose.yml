@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: postgres
+    image: postgres:16
     container_name: BD_TPEspecial
     environment:
       POSTGRES_USER: nachoperna
