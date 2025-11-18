@@ -2,14 +2,32 @@ package views
 
 import sqlc "TP_Especial/db/sqlc"
 
-templ GetRequestsTo(pedidos []sqlc.GetRequestsToRow) {
+templ GetRequestsTo(pedidos []sqlc.GetRequestsToRow, sort_by, order, next_order string) {
 	<table id="tabla-pedidos">
 		<thead>
 			<tr>
-				<th class="ordenable-to" data-sort-by="from_alias">Pedidor</th>
-				<th class="ordenable-to sort-desc" data-sort-by="amount">Monto</th>
+				<th
+					id="from_alias"
+					class={ getClass("from_alias", sort_by, order) }
+					hx-get={ "/listRequestsTo?to_alias=" + pedidos[0].ToAlias + "&sort_by=from_alias&sort_order=" + next_order }
+					hx-target="#tabla-pedidos-container"
+					hx-swap="innerHTML"
+				>Pedidor</th>
+				<th
+					id="amount"
+					class={ getClass("amount", sort_by, order) }
+					hx-get={ "/listRequestsTo?to_alias=" + pedidos[0].ToAlias + "&sort_by=amount&sort_order=" + next_order }
+					hx-target="#tabla-pedidos-container"
+					hx-swap="innerHTML"
+				>Monto</th>
 				<th>Mensaje</th>
-				<th class="ordenable-to" data-sort-by="day">Dia</th>
+				<th
+					id="day"
+					class={ getClass("day", sort_by, order) }
+					hx-get={ "/listRequestsTo?to_alias=" + pedidos[0].ToAlias + "&sort_by=day&sort_order=" + next_order }
+					hx-target="#tabla-pedidos-container"
+					hx-swap="innerHTML"
+				>Dia</th>
 				<th>Hora</th>
 				<th>Accion</th>
 			</tr>
@@ -25,8 +43,9 @@ templ GetRequestsTo(pedidos []sqlc.GetRequestsToRow) {
 					<td>
 						<a
 							class="descartar-pedido-recibido"
-							data-alias-from={ pedido.FromAlias }
-							data-alias-to={ pedido.ToAlias }
+							hx-get={ "/deleteRequestsTo?from_alias=" + pedido.FromAlias + "&to_alias=" + pedido.ToAlias }
+							hx-target="#tabla-pedidos-container"
+							hx-swap="innerHTML"
 						>
 							Descartar
 						</a>
@@ -37,14 +56,32 @@ templ GetRequestsTo(pedidos []sqlc.GetRequestsToRow) {
 	</table>
 }
 
-templ GetRequestsFrom(pedidos []sqlc.GetRequestsFromRow) {
+templ GetRequestsFrom(pedidos []sqlc.GetRequestsFromRow, sort_by, order, next_order string) {
 	<table id="tabla-pedidos">
 		<thead>
 			<tr>
-				<th class="ordenable-from" data-sort-by="to_alias">Hacia</th>
-				<th class="ordenable-from sort-desc" data-sort-by="amount">Monto</th>
+				<th
+					id="from_alias"
+					class={ getClass("from_alias", sort_by, order) }
+					hx-get={ "/listRequestsFrom?from_alias=" + pedidos[0].FromAlias + "&sort_by=from_alias&sort_order=" + next_order }
+					hx-target="#tabla-pedidos-container"
+					hx-swap="innerHTML"
+				>Pedidor</th>
+				<th
+					id="amount"
+					class={ getClass("amount", sort_by, order) }
+					hx-get={ "/listRequestsFrom?from_alias=" + pedidos[0].FromAlias + "&sort_by=amount&sort_order=" + next_order }
+					hx-target="#tabla-pedidos-container"
+					hx-swap="innerHTML"
+				>Monto</th>
 				<th>Mensaje</th>
-				<th class="ordenable-from" data-sort-by="day">Dia</th>
+				<th
+					id="day"
+					class={ getClass("day", sort_by, order) }
+					hx-get={ "/listRequestsFrom?from_alias=" + pedidos[0].FromAlias + "&sort_by=day&sort_order=" + next_order }
+					hx-target="#tabla-pedidos-container"
+					hx-swap="innerHTML"
+				>Dia</th>
 				<th>Hora</th>
 				<th>Accion</th>
 			</tr>
@@ -58,7 +95,12 @@ templ GetRequestsFrom(pedidos []sqlc.GetRequestsFromRow) {
 					<td>{ pedido.Day }</td>
 					<td>{ pedido.Time }</td>
 					<td>
-						<a class="descartar-pedido-realizado" data-aliasTo={ pedido.ToAlias }>
+						<a
+							class="descartar-pedido-realizado"
+							hx-get={ "/deleteRequestsTo?from_alias=" + pedido.FromAlias + "&to_alias=" + pedido.ToAlias }
+							hx-target="#tabla-pedidos-container"
+							hx-swap="innerHTML"
+						>
 							Descartar
 						</a>
 					</td>
@@ -74,4 +116,12 @@ templ SinPedidos(recibidos bool) {
 	} else {
 		<h3>No tienes pedidos de dinero realizados por el momento</h3>
 	}
+}
+
+func getClass(colName, activeSortBy, activeSortOrder string) string {
+	base := "ordenable"
+	if colName == activeSortBy {
+		return base + " sort-" + activeSortOrder
+	}
+	return base
 }

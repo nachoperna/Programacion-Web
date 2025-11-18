@@ -38,7 +38,11 @@ func (h *Handler) ListRequestsTo(w http.ResponseWriter, r *http.Request) {
 		views.SinPedidos(true).Render(h.ctx, w)
 		return
 	}
-	views.GetRequestsTo(pedidos).Render(h.ctx, w)
+	nextSortOrder := "asc"
+	if sort_order == "asc" {
+		nextSortOrder = "desc"
+	}
+	views.GetRequestsTo(pedidos, sort_by, sort_order, nextSortOrder).Render(h.ctx, w)
 }
 
 func (h *Handler) ListRequestsFrom(w http.ResponseWriter, r *http.Request) {
@@ -62,7 +66,11 @@ func (h *Handler) ListRequestsFrom(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error obteniendo requests", http.StatusNotFound)
 		return
 	}
-	views.GetRequestsFrom(pedidos).Render(h.ctx, w)
+	nextSortOrder := "asc"
+	if sort_order == "asc" {
+		nextSortOrder = "desc"
+	}
+	views.GetRequestsFrom(pedidos, sort_by, sort_order, nextSortOrder).Render(h.ctx, w)
 }
 
 func (h *Handler) DeleteRequestsTo(w http.ResponseWriter, r *http.Request) {
