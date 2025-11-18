@@ -3,7 +3,7 @@ package views
 import sqlc "TP_Especial/db/sqlc"
 
 templ GetRequestsTo(pedidos []sqlc.GetRequestsToRow) {
-	<table id="tabla-pedidos" class="tabla-pedidos-unactive">
+	<table id="tabla-pedidos">
 		<thead>
 			<tr>
 				<th class="ordenable-to" data-sort-by="from_alias">Pedidor</th>
@@ -38,7 +38,7 @@ templ GetRequestsTo(pedidos []sqlc.GetRequestsToRow) {
 }
 
 templ GetRequestsFrom(pedidos []sqlc.GetRequestsFromRow) {
-	<table id="tabla-pedidos" class="tabla-pedidos-unactive">
+	<table id="tabla-pedidos">
 		<thead>
 			<tr>
 				<th class="ordenable-from" data-sort-by="to_alias">Hacia</th>
