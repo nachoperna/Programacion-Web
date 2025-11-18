@@ -7,6 +7,7 @@
       <link rel="stylesheet" href="./css/generales.css">
       <link rel="stylesheet" href="./css/index.css">
       <link rel="icon" type="image/svg" href="./img/400mm rosa.svg">
+      <script src="https://unpkg.com/htmx.org@1.9.10"></script>
 </head>
 <body>
       <div class="main-container">
@@ -27,24 +28,58 @@
                   <!-- Columna derecha (rosa) -->
                   <div class="form-column">
                         <div class="login-options">
-                              <button type="button" class="client-button" onclick="displayLogin()">Soy cliente</button> 
-                              <button type="button" class="noclient-button" onclick="displayRegister()">No soy cliente</button> 
+                              <button 
+                                    type="button" 
+                                    class="client-button"
+                                    hx-on:click="
+                                          document.getElementById('register-form').style.display = 'none';
+                                          document.getElementById('login-form').style.display = 'block';
+                                          "
+                                    >Soy cliente
+                              </button> 
+                              <button 
+                                    type="button" 
+                                    class="noclient-button" 
+                                    hx-on:click="
+                                          document.getElementById('login-form').style.display = 'none';
+                                          document.getElementById('register-form').style.display = 'block';
+                                          "
+                                    >No soy cliente
+                              </button> 
                         </div>
                         <div class="login-form" id="login-form">
                               <h2>Iniciar Sesión</h2>
-                              <form action="/login-confirmation" method="POST" target="_self">
+                              <form 
+                                    hx-post="/login-confirmation"
+                                    hx-on:alias_not_found="alert('El Alias ingresado no se encuentra registrado')"
+                                    hx-on:password_incorrect="alert('La contraseña ingresada es incorrecta')"
+                                    hx-on:htmx:responseError="alert('Error: ' + event.detail.xhr.responseText)"
+                              >
                                     <div class="form-group">
                                           <label for="text">Ingresa tu alias</label>
                                           <input type="text" id="alias" name="alias" required>
                                     </div>
-                                    
+ 
                                     <div class="form-group">
                                           <label for="password">Ingresa tu contraseña</label>
                                           <input type="password" id="password" name="password" required>
                                     </div>
-                                    
+ 
                                     <div class="form-options">
-                                          <a class="forgot-password" onclick="displayNewPass()">¿Olvidaste tu contraseña?</a>
+                                          <a 
+                                                class="forgot-password"
+                                                hx-on:click="
+                                                      document.getElementById('new-password').classList.toggle('new-pass-unactive');
+                                                      document.getElementById('new-pass').disabled = true;
+                                                      document.getElementById('password').required = true;
+                                                      const newPassInput = document.getElementById('new-pass');
+                                                      const passwordInput = document.getElementById('password');
+
+                                                      newPassInput.disabled = !newPassInput.disabled;
+
+                                                      passwordInput.required = !passwordInput.required;"
+                                                >¿Olvidaste tu contraseña?
+                                          </a>
                                     </div>
 
                                     <div class="form-group new-pass-unactive" id="new-password">
@@ -58,7 +93,11 @@
 
                         <div class="register-form" id="register-form">
                               <h2>Registrarme</h2>
-                              <form action="/register-confirmation" method="POST" target="_self">
+                              <form 
+                                    hx-post="/register-confirmation"
+                                    hx-on:alias_usado="alert('El alias ingresado ya se encuentra registrado en la base')"
+                                    hx-on:htmx:responseError="alert('Error: ' + event.detail.xhr.responseText)"
+                              >
                                     <div class="form-group">
                                           <label for="email">Ingresa tu email</label>
                                           <input type="email" id="email" name="email" required>

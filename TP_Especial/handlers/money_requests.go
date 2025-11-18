@@ -30,12 +30,12 @@ func (h *Handler) ListRequestsTo(w http.ResponseWriter, r *http.Request) {
 		SortBy:    sort_by,
 		SortOrder: sort_order,
 	})
-	if len(pedidos) == 0 {
-		views.SinPedidos(true).Render(h.ctx, w)
-		return
-	}
 	if err != nil {
 		http.Error(w, "Error obteniendo requests", http.StatusNotFound)
+		return
+	}
+	if len(pedidos) == 0 {
+		views.SinPedidos(true).Render(h.ctx, w)
 		return
 	}
 	views.GetRequestsTo(pedidos).Render(h.ctx, w)

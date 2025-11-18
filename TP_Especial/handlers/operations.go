@@ -20,6 +20,11 @@ func (h *Handler) Deposit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if amount <= 0 {
+		w.Header().Set("HX-Trigger", "invalid_amount")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 	_, err = h.queries.Deposit(h.ctx, sqlc.DepositParams{
 		Alias:             datos["Alias"],
 		LastDepositAmount: sql.NullString{String: fmt.Sprintf("%.2f", amount), Valid: true},
@@ -33,7 +38,8 @@ func (h *Handler) Deposit(w http.ResponseWriter, r *http.Request) {
 	redirectURL := fmt.Sprintf("/home?alias=%s",
 		datos["Alias"])
 
-	http.Redirect(w, r, redirectURL, http.StatusSeeOther)
+	w.Header().Set("HX-Redirect", redirectURL)
+	w.WriteHeader(http.StatusOK)
 }
 
 func (h *Handler) Withdrawal(w http.ResponseWriter, r *http.Request) {
@@ -46,9 +52,14 @@ func (h *Handler) Withdrawal(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Monto inválido", http.StatusBadRequest)
 		return
 	}
+	if amount <= 0 {
+		w.Header().Set("HX-Trigger", "invalid_amount")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 	if !h.EnoughBalance(w, datos["Alias"], amount) {
-		redirectURL := fmt.Sprintf("/home?alias=%s&error=not_enough_balance", datos["Alias"])
-		http.Redirect(w, r, redirectURL, http.StatusSeeOther)
+		w.Header().Set("HX-Trigger", "not_enough_balance")
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	err = h.queries.Withdrawal(h.ctx, sqlc.WithdrawalParams{
@@ -63,7 +74,8 @@ func (h *Handler) Withdrawal(w http.ResponseWriter, r *http.Request) {
 	redirectURL := fmt.Sprintf("/home?alias=%s",
 		datos["Alias"])
 
-	http.Redirect(w, r, redirectURL, http.StatusSeeOther)
+	w.Header().Set("HX-Redirect", redirectURL)
+	w.WriteHeader(http.StatusOK)
 }
 
 func (h *Handler) Transfer(w http.ResponseWriter, r *http.Request) {
@@ -73,8 +85,8 @@ func (h *Handler) Transfer(w http.ResponseWriter, r *http.Request) {
 		"Amount":       r.FormValue("amount"),
 	}
 	if datos["Alias_propio"] == datos["Alias_otro"] {
-		redirectURL := fmt.Sprintf("/home?alias=%s&error=mismo_alias", datos["Alias_propio"])
-		http.Redirect(w, r, redirectURL, http.StatusSeeOther)
+		w.Header().Set("HX-Trigger", "mismo_alias")
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
@@ -84,6 +96,11 @@ func (h *Handler) Transfer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if amount <= 0 {
+		w.Header().Set("HX-Trigger", "invalid_amount")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 	if !h.EnoughBalance(w, datos["Alias_propio"], amount) {
 		redirectURL := fmt.Sprintf("/home?alias=%s&error=not_enough_balance", datos["Alias_propio"])
 		http.Redirect(w, r, redirectURL, http.StatusSeeOther)
@@ -119,7 +136,8 @@ func (h *Handler) Transfer(w http.ResponseWriter, r *http.Request) {
 	redirectURL := fmt.Sprintf("/home?alias=%s",
 		datos["Alias_propio"])
 
-	http.Redirect(w, r, redirectURL, http.StatusSeeOther)
+	w.Header().Set("HX-Redirect", redirectURL)
+	w.WriteHeader(http.StatusOK)
 }
 
 func (h *Handler) RequestMoney(w http.ResponseWriter, r *http.Request) {
@@ -131,14 +149,14 @@ func (h *Handler) RequestMoney(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if datos["Alias_propio"] == datos["Alias_otro"] {
-		redirectURL := fmt.Sprintf("/home?alias=%s&error=mismo_alias", datos["Alias_propio"])
-		http.Redirect(w, r, redirectURL, http.StatusSeeOther)
+		w.Header().Set("HX-Trigger", "mismo_alias")
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	amount, err := strconv.ParseFloat(datos["Amount"], 64)
-	if err != nil || amount < 0 {
-		redirectURL := fmt.Sprintf("/home?alias=%s&error=invalid_amount", datos["Alias_propio"])
-		http.Redirect(w, r, redirectURL, http.StatusSeeOther)
+	if err != nil || amount <= 0 {
+		w.Header().Set("HX-Trigger", "invalid_amount")
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	_, err = h.queries.InsertRequest(h.ctx, sqlc.InsertRequestParams{
@@ -151,7 +169,8 @@ func (h *Handler) RequestMoney(w http.ResponseWriter, r *http.Request) {
 	redirectURL := fmt.Sprintf("/home?alias=%s",
 		datos["Alias_propio"])
 
-	http.Redirect(w, r, redirectURL, http.StatusSeeOther)
+	w.Header().Set("HX-Redirect", redirectURL)
+	w.WriteHeader(http.StatusOK)
 }
 
 func (h *Handler) EnoughBalance(w http.ResponseWriter, alias string, monto float64) bool {

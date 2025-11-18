@@ -27,17 +27,20 @@ func (h *Handler) ConfirmLogin(w http.ResponseWriter, r *http.Request) {
 			Password: datos["New_Password"],
 		})
 		if err == sql.ErrNoRows {
-			http.Redirect(w, r, "/?error=alias_not_found", http.StatusSeeOther)
+			w.Header().Set("HX-Trigger", "alias_not_found")
+			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
 	} else {
 		user, err = h.queries.GetUser(h.ctx, datos["Alias"])
 		if err == sql.ErrNoRows {
-			http.Redirect(w, r, "/?error=alias_not_found", http.StatusSeeOther)
+			w.Header().Set("HX-Trigger", "alias_not_found")
+			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
 		if user.Password != datos["Password"] {
-			http.Redirect(w, r, "/?error=password_incorrect", http.StatusSeeOther)
+			w.Header().Set("HX-Trigger", "password_incorrect")
+			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
 	}
@@ -47,7 +50,8 @@ func (h *Handler) ConfirmLogin(w http.ResponseWriter, r *http.Request) {
 		user.Name,
 		user.Email)
 
-	http.Redirect(w, r, redirectURL, http.StatusSeeOther)
+	w.Header().Set("HX-Redirect", redirectURL)
+	w.WriteHeader(http.StatusOK)
 }
 
 func (h *Handler) ConfirmRegiser(w http.ResponseWriter, r *http.Request) {
@@ -70,7 +74,8 @@ func (h *Handler) ConfirmRegiser(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	} else {
-		http.Redirect(w, r, "/?error=alias_usado", http.StatusSeeOther)
+		w.Header().Set("HX-Trigger", "alias_usado")
+		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
 
@@ -79,7 +84,8 @@ func (h *Handler) ConfirmRegiser(w http.ResponseWriter, r *http.Request) {
 		datos["Name"],
 		datos["Email"])
 
-	http.Redirect(w, r, redirectURL, http.StatusSeeOther)
+	w.Header().Set("HX-Redirect", redirectURL)
+	w.WriteHeader(http.StatusOK)
 }
 
 func (h *Handler) Showhome(w http.ResponseWriter, r *http.Request) {
@@ -108,8 +114,6 @@ func (h *Handler) Showhome(w http.ResponseWriter, r *http.Request) {
 		datos["Name"] = values.Get("name")
 		datos["Email"] = values.Get("email")
 	}
-
-	// datos["Mensajes"], err = h.queries.GetRequestsTo(h.ctx, datos["Alias"].(string))
 
 	// Servir el template con datos actualizados
 	tmp, err := template.ParseFiles("static/bienvenida.html")
