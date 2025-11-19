@@ -3,6 +3,14 @@
 ## Integrantes
 - Ignacio Agustin Perna
 
+## Dependencias
+Este proyecto necesita de las siguientes dependencias y sus versiones especificadas para funcionar correctamente:
+- **Docker 28.5.1 o superior** (make install-docker)
+- **Go 1.24.9 o superior** (make install-go)
+- **templ v0.3.960 o superior** (make install-templ)
+- **sqlc v1.30.0 o superior** (make install-sqlc)
+- **hurl 4.2.0 o superior** (make install-hurl)
+
 ## Descripción
 Este proyecto consta de una billetera virtual que tendrá todas las funcionalidades principales de la misma:
 - Creación de cuenta con formularios de registro e inicios de sesión posteriores
