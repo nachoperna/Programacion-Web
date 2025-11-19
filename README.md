@@ -36,10 +36,18 @@ Este proyecto consta de una billetera virtual que tendrá todas las funcionalida
 
 3. Dirigirte hacia el navegador web y abrir localhost:8080.
 
-4. Para finalizar la ejecución de la aplicacion y dar de baja el contenedor docker junto con la base de datos debe
+4. Si quiere puede registrarse en la página o ingresar usando inicialmente los siguientes usuarios:
+            
+      | Alias  | Contraseña   | Comentario                              |
+      | :-------: | :------------: | :--------------------------------------- |
+      | alias1 | persona1pass | Contiene 3 pedidos de dinero recibidos  |
+      | alias2 | persona2pass | Contiene 2 pedidos de dinero realizados |
+      | alias3 | persona3pass | Contiene 1 pedido de dinero realizado   |
+            
+5. Para finalizar la ejecución de la aplicacion y dar de baja el contenedor docker junto con la base de datos debe
    ejecutar el comando **make down** 
 
-5. **Aclaración:** Si usted ejecuta esta aplicación en un sistema operativo Windows puede que el comando para cerrar el
+6. **Aclaración:** Si usted ejecuta esta aplicación en un sistema operativo Windows puede que el comando para cerrar el
    puerto 8080 no le funcione porque se realiza con comandos Bash. En ese caso, debe cerrar el puerto por su cuenta.
 
 ## Estructura de la Base de Datos
