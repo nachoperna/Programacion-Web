@@ -1,0 +1,4 @@
+sqlc/
+migrations/
+views/*.go
+LICENSE
