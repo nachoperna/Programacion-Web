@@ -73,7 +73,15 @@
                                     hx-get="/listRequestsTo?to_alias={{.Alias}}"
                                     hx-target="#tabla-pedidos-container"
                                     hx-swap="innerHTML"
-                                    hx-on:click="document.getElementById('tabla-pedidos-container').classList.toggle('oculto');"
+                                    hx-on:htmx:before-request="
+                                          const container = document.getElementById('tabla-pedidos-container');
+                                          if (!container.classList.contains('oculto')){
+                                                event.preventDefault();
+                                                container.classList.add('oculto');
+                                                container.innerHTML = '';
+                                          }
+                                          "
+                                    hx-on:htmx:after-request="document.getElementById('tabla-pedidos-container').classList.remove('oculto');"
                               >Pedidos recibidos
                               </button>
 
@@ -83,7 +91,15 @@
                                     hx-get="/listRequestsFrom?from_alias={{.Alias}}"
                                     hx-target="#tabla-pedidos-container"
                                     hx-swap="innerHTML"
-                                    hx-on:click="document.getElementById('tabla-pedidos-container').classList.toggle('oculto');"
+                                    hx-on:htmx:before-request="
+                                          const container = document.getElementById('tabla-pedidos-container');
+                                          if (!container.classList.contains('oculto')){
+                                                event.preventDefault();
+                                                container.classList.add('oculto');
+                                                container.innerHTML = '';
+                                          }
+                                          "
+                                    hx-on:htmx:after-request="document.getElementById('tabla-pedidos-container').classList.remove('oculto');"
                               >Pedidos realizados
                               </button>
                         </div>
