@@ -51,3 +51,14 @@ update accounts set
 
 -- name: GetBalance :one
 select balance, last_movement_type from accounts where alias = $1;
+
+-- name: GetHistory :one
+select 
+      last_deposit,
+      last_deposit_amount,
+      last_transfer,
+      last_transfer_account,
+      last_transfer_amount,
+      last_withdrawal,
+      last_withdrawal_amount
+      from accounts where alias = $1;
