@@ -82,6 +82,9 @@ func main() {
 	http.HandleFunc("/listRequestsTo", handler.ListRequestsTo)
 	http.HandleFunc("/listRequestsFrom", handler.ListRequestsFrom)
 
+	// PROCESAMIENTO DE LA TABLA DAE ULTIMOS MOVIMIENTOS
+	http.HandleFunc("/listMovements", handler.ListMovements)
+
 	// Procesamiento de TABLA DE PEDIDOS DE DINERO PARA MOSTRRAR EN HOME
 	http.HandleFunc("/deleteRequestsTo", handler.DeleteRequestsTo)
 
