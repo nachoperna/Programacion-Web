@@ -43,8 +43,9 @@ templ GetRequestsTo(pedidos []sqlc.GetRequestsToRow, sort_by, order, next_order 
 					<td>
 						<a
 							class="descartar-pedido-recibido"
-							hx-get={ "/deleteRequestsTo?from_alias=" + pedido.FromAlias + "&to_alias=" + pedido.ToAlias }
+							hx-delete={ "/deleteRequestsTo?from_alias=" + pedido.FromAlias + "&to_alias=" + pedido.ToAlias }
 							hx-target="#tabla-pedidos-container"
+                                          hx-confirm="Seguro que desea borrar este pedido?"
 							hx-swap="innerHTML"
 						>
 							Descartar
@@ -97,8 +98,9 @@ templ GetRequestsFrom(pedidos []sqlc.GetRequestsFromRow, sort_by, order, next_or
 					<td>
 						<a
 							class="descartar-pedido-realizado"
-							hx-get={ "/deleteRequestsTo?from_alias=" + pedido.FromAlias + "&to_alias=" + pedido.ToAlias }
+							hx-delete={ "/deleteRequestsTo?from_alias=" + pedido.FromAlias + "&to_alias=" + pedido.ToAlias }
 							hx-target="#tabla-pedidos-container"
+                                          hx-confirm="Seguro que desea borrar este pedido?"
 							hx-swap="innerHTML"
 						>
 							Descartar
