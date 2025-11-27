@@ -1,0 +1,129 @@
+package views 
+
+import sqlc "TP_Especial/db/sqlc"
+
+templ GetRequestsTo(pedidos []sqlc.GetRequestsToRow, sort_by, order, next_order string) {
+	<table id="tabla-pedidos">
+		<thead>
+			<tr>
+				<th
+					id="from_alias"
+					class={ getClass("from_alias", sort_by, order) }
+					hx-get={ "/listRequestsTo?to_alias=" + pedidos[0].ToAlias + "&sort_by=from_alias&sort_order=" + next_order }
+					hx-target="#tabla-pedidos-container"
+					hx-swap="innerHTML"
+				>Pedidor</th>
+				<th
+					id="amount"
+					class={ getClass("amount", sort_by, order) }
+					hx-get={ "/listRequestsTo?to_alias=" + pedidos[0].ToAlias + "&sort_by=amount&sort_order=" + next_order }
+					hx-target="#tabla-pedidos-container"
+					hx-swap="innerHTML"
+				>Monto</th>
+				<th>Mensaje</th>
+				<th
+					id="day"
+					class={ getClass("day", sort_by, order) }
+					hx-get={ "/listRequestsTo?to_alias=" + pedidos[0].ToAlias + "&sort_by=day&sort_order=" + next_order }
+					hx-target="#tabla-pedidos-container"
+					hx-swap="innerHTML"
+				>Dia</th>
+				<th>Hora</th>
+				<th>Accion</th>
+			</tr>
+		</thead>
+		<tbody>
+			for _, pedido := range pedidos {
+				<tr>
+					<td>{ pedido.FromAlias }</td>
+					<td>$ { pedido.Amount }</td>
+					<td>{ pedido.Message.String }</td>
+					<td>{ pedido.Day }</td>
+					<td>{ pedido.Time }</td>
+					<td>
+						<a
+							class="descartar-pedido-recibido"
+							hx-delete={ "/deleteRequestsTo?from_alias=" + pedido.FromAlias + "&to_alias=" + pedido.ToAlias }
+							hx-target="#tabla-pedidos-container"
+                                          hx-confirm="Seguro que desea borrar este pedido?"
+							hx-swap="innerHTML"
+						>
+							Descartar
+						</a>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+
+templ GetRequestsFrom(pedidos []sqlc.GetRequestsFromRow, sort_by, order, next_order string) {
+	<table id="tabla-pedidos">
+		<thead>
+			<tr>
+				<th
+					id="from_alias"
+					class={ getClass("from_alias", sort_by, order) }
+					hx-get={ "/listRequestsFrom?from_alias=" + pedidos[0].FromAlias + "&sort_by=from_alias&sort_order=" + next_order }
+					hx-target="#tabla-pedidos-container"
+					hx-swap="innerHTML"
+				>Pedidor</th>
+				<th
+					id="amount"
+					class={ getClass("amount", sort_by, order) }
+					hx-get={ "/listRequestsFrom?from_alias=" + pedidos[0].FromAlias + "&sort_by=amount&sort_order=" + next_order }
+					hx-target="#tabla-pedidos-container"
+					hx-swap="innerHTML"
+				>Monto</th>
+				<th>Mensaje</th>
+				<th
+					id="day"
+					class={ getClass("day", sort_by, order) }
+					hx-get={ "/listRequestsFrom?from_alias=" + pedidos[0].FromAlias + "&sort_by=day&sort_order=" + next_order }
+					hx-target="#tabla-pedidos-container"
+					hx-swap="innerHTML"
+				>Dia</th>
+				<th>Hora</th>
+				<th>Accion</th>
+			</tr>
+		</thead>
+		<tbody>
+			for _, pedido := range pedidos {
+				<tr>
+					<td>{ pedido.ToAlias }</td>
+					<td>$ { pedido.Amount }</td>
+					<td>{ pedido.Message.String }</td>
+					<td>{ pedido.Day }</td>
+					<td>{ pedido.Time }</td>
+					<td>
+						<a
+							class="descartar-pedido-realizado"
+							hx-delete={ "/deleteRequestsTo?from_alias=" + pedido.FromAlias + "&to_alias=" + pedido.ToAlias }
+							hx-target="#tabla-pedidos-container"
+                                          hx-confirm="Seguro que desea borrar este pedido?"
+							hx-swap="innerHTML"
+						>
+							Descartar
+						</a>
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+
+templ SinPedidos(recibidos bool) {
+	if recibidos {
+		<h3>No tienes pedidos de dinero recibidos por el momento</h3>
+	} else {
+		<h3>No tienes pedidos de dinero realizados por el momento</h3>
+	}
+}
+
+func getClass(colName, activeSortBy, activeSortOrder string) string {
+	base := "ordenable"
+	if colName == activeSortBy {
+		return base + " sort-" + activeSortOrder
+	}
+	return base
+}
