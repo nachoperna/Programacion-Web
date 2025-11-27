@@ -1,0 +1,34 @@
+package views
+
+templ SetInfo(alias, balance, email, last_movement string) {
+	<div class="tarjeta-balance">
+		<label>Balance</label>
+		<span id="balance">
+			if balance != "" {
+				$ { balance } ARS
+			} else {
+				$ 0.00 ARS
+			}
+		</span>
+	</div>
+	<div class="tarjetas">
+		<div class="info">
+			<label>Alias</label>
+			<span>{ alias }</span>
+		</div>
+		<div class="info">
+			<label>Email</label>
+			<span>{ email }</span>
+		</div>
+		<div class="info">
+			<label>Ultimo movimiento</label>
+			<span>
+				if last_movement != "" {
+					{ last_movement }
+				} else {
+					- 
+				}
+			</span>
+		</div>
+	</div>
+}

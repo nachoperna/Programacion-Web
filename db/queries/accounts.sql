@@ -30,24 +30,26 @@ update accounts set
       last_deposit = current_timestamp, 
       last_deposit_amount = $2
       where alias = $1
-returning *;
+returning balance, last_movement_type;
 
--- name: Withdrawal :exec
+-- name: Withdrawal :one
 update accounts set 
       balance = balance - $2,
       last_movement_type = 'Retiro',
       last_withdrawal = current_timestamp,
       last_withdrawal_amount = $2
-      where alias = $1;
+      where alias = $1
+returning balance, last_movement_type;
 
--- name: Transfer :exec
+-- name: Transfer :one
 update accounts set 
       balance = balance - $3,
       last_movement_type = 'Transferencia',
       last_transfer = current_timestamp,
       last_transfer_account = $2,
       last_transfer_amount = $3
-      where alias = $1;
+      where alias = $1
+returning balance, last_movement_type;
 
 -- name: GetBalance :one
 select balance, last_movement_type from accounts where alias = $1;

@@ -2,11 +2,13 @@ package handlers
 
 import (
 	sqlc "TP_Especial/db/sqlc"
+	"TP_Especial/views"
 	"database/sql"
 	"fmt"
-	_ "github.com/lib/pq"
 	"net/http"
 	"strconv"
+
+	_ "github.com/lib/pq"
 )
 
 func (h *Handler) Deposit(w http.ResponseWriter, r *http.Request) {
@@ -25,7 +27,8 @@ func (h *Handler) Deposit(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	_, err = h.queries.Deposit(h.ctx, sqlc.DepositParams{
+	datos["Email"] = r.URL.Query().Get("email")
+	info, err := h.queries.Deposit(h.ctx, sqlc.DepositParams{
 		Alias:             datos["Alias"],
 		LastDepositAmount: sql.NullString{String: fmt.Sprintf("%.2f", amount), Valid: true},
 	})
@@ -34,12 +37,7 @@ func (h *Handler) Deposit(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error al Depositar", http.StatusInternalServerError)
 		return
 	}
-
-	redirectURL := fmt.Sprintf("/home?alias=%s",
-		datos["Alias"])
-
-	w.Header().Set("HX-Redirect", redirectURL)
-	w.WriteHeader(http.StatusOK)
+	views.SetInfo(datos["Alias"], info.Balance, datos["Email"], info.LastMovementType.String).Render(h.ctx, w)
 }
 
 func (h *Handler) Withdrawal(w http.ResponseWriter, r *http.Request) {
@@ -62,7 +60,8 @@ func (h *Handler) Withdrawal(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	err = h.queries.Withdrawal(h.ctx, sqlc.WithdrawalParams{
+	datos["Email"] = r.URL.Query().Get("email")
+	info, err := h.queries.Withdrawal(h.ctx, sqlc.WithdrawalParams{
 		Alias:                datos["Alias"],
 		LastWithdrawalAmount: sql.NullString{String: fmt.Sprintf("%.2f", amount), Valid: true},
 	})
@@ -71,11 +70,7 @@ func (h *Handler) Withdrawal(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	redirectURL := fmt.Sprintf("/home?alias=%s",
-		datos["Alias"])
-
-	w.Header().Set("HX-Redirect", redirectURL)
-	w.WriteHeader(http.StatusOK)
+	views.SetInfo(datos["Alias"], info.Balance, datos["Email"], info.LastMovementType.String).Render(h.ctx, w)
 }
 
 func (h *Handler) Transfer(w http.ResponseWriter, r *http.Request) {
@@ -113,7 +108,9 @@ func (h *Handler) Transfer(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, redirectURL, http.StatusSeeOther)
 		return
 	}
-	err = h.queries.Transfer(h.ctx, sqlc.TransferParams{
+
+	datos["Email"] = r.URL.Query().Get("email")
+	info, err := h.queries.Transfer(h.ctx, sqlc.TransferParams{
 		Alias:               datos["Alias_propio"],
 		LastTransferAccount: sql.NullString{String: datos["Alias_otro"], Valid: true},
 		LastTransferAmount:  sql.NullString{String: fmt.Sprintf("%.2f", amount), Valid: true},
@@ -133,11 +130,7 @@ func (h *Handler) Transfer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	redirectURL := fmt.Sprintf("/home?alias=%s",
-		datos["Alias_propio"])
-
-	w.Header().Set("HX-Redirect", redirectURL)
-	w.WriteHeader(http.StatusOK)
+	views.SetInfo(datos["Alias_propio"], info.Balance, datos["Email"], info.LastMovementType.String).Render(h.ctx, w)
 }
 
 func (h *Handler) RequestMoney(w http.ResponseWriter, r *http.Request) {

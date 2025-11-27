@@ -160,8 +160,10 @@
                         <div id="form-deposito" class="operation-form form-visible">
                               <h3>Realizar Depósito</h3>
                               <form 
-                                    hx-post="/deposit"
+                                    hx-post="/deposit?email={{.Email}}"
                                     hx-on:invalid_amount="alert('Monto inválido para realizar la operación')"
+                                    hx-target=".info-principal"
+                                    hx-swap="innerHTML"
                               >
                                     <div class="form-group">
                                           <label for="dep-alias-destino">Alias destino:</label>
@@ -178,9 +180,11 @@
                         <div id="form-retiro" class="operation-form">
                               <h3>Realizar Retiro</h3>
                               <form 
-                                    hx-post="/withdrawal" 
+                                    hx-post="/withdrawal?email={{.Email}}" 
                                     hx-on:not_enough_balance="alert('No tienes fondos suficientes para realizar la operación')"
                                     hx-on:invalid_amount="alert('Monto inválido para realizar la operación')"
+                                    hx-target=".info-principal"
+                                    hx-swap="innerHTML"
                               >
                                     <div class="form-group">
                                           <label for="ret-alias-origen">Tu Alias:</label>
@@ -197,10 +201,12 @@
                         <div id="form-transferencia" class="operation-form">
                               <h3>Realizar Transferencia</h3>
                               <form 
-                                    hx-post="/transfer" 
+                                    hx-post="/transfer?email={{.Email}}" 
                                     hx-on:not_enough_balance="alert('No tienes fondos suficientes para realizar la operación')"
                                     hx-on:mismo_alias="alert('No se puede realizar una Transferencia entre el mismo usuario')"
                                     hx-on:invalid_amount="alert('Monto inválido para realizar la operación')"
+                                    hx-target=".info-principal"
+                                    hx-swap="innerHTML"
                               >
                                     <div class="form-group">
                                           <label for="trans-alias-origen">Alias origen:</label>
