@@ -1,0 +1,28 @@
+package views 
+
+import model "TP_Especial/structs"
+
+templ GetMovements(movimientos []model.Movimientos) {
+	if (len(movimientos) == 0) {
+		<h3>No tienes movimientos realizados por el momento...</h3>
+	} else {
+		<table id="tabla-pedidos">
+			<thead>
+				<tr>
+					<th>Tipo</th>
+					<th>Monto</th>
+					<th>Fecha</th>
+				</tr>
+			</thead>
+			<tbody>
+				for _, mov := range movimientos {
+					<tr>
+						<td>{ mov.Type }</td>
+						<td>$ { mov.Amount }</td>
+						<td>{ mov.Date.Format("02/01/2006") }</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	}
+}
