@@ -27,5 +27,5 @@ func (h *Handler) ListMovements(w http.ResponseWriter, r *http.Request) {
 		mov := model.Movimientos{Type: "Retiro", Amount: historial.LastWithdrawalAmount.String, Date: historial.LastDeposit.Time}
 		movimientos = append(movimientos, mov)
 	}
-	views.GetMovements(movimientos, alias).Render(h.ctx, w)
+	views.GetMovements(movimientos).Render(h.ctx, w)
 }
