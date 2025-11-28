@@ -143,6 +143,28 @@
       cursor: pointer;
 }
 
+#pedidos-recibidos {
+      position: relative;
+      display: inline-flex;
+}
+
+#request-count {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      top: -10px;
+      left: -10px;
+      color: white;
+      font-size: 14px;
+      font-weight: bold;
+      background-color: red;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+}
+
 #tabla-pedidos-container,
 #tabla-pedidos {
       width: 100%;

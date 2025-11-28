@@ -6,8 +6,9 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	_ "github.com/lib/pq"
 	"net/http"
+
+	_ "github.com/lib/pq"
 )
 
 type Request struct {
@@ -85,6 +86,9 @@ func (h *Handler) DeleteRequestsTo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	h.ListRequestsTo(w, r)
+
+	pedidos, _ := h.queries.GetRequestsToCount(h.ctx, to_alias)
+	views.RequestCount(int(pedidos), to_alias).Render(h.ctx, w)
 }
 
 func (h *Handler) CreateRequest(w http.ResponseWriter, r *http.Request) {

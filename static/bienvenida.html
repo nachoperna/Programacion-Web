@@ -66,23 +66,7 @@
                               </div>
                         </div>
                         <div class="footer">
-                              <button
-                                    id="pedidos-recibidos"
-                                    type="button" 
-                                    hx-get="/listRequestsTo?to_alias={{.Alias}}"
-                                    hx-target="#tabla-pedidos-container"
-                                    hx-swap="innerHTML"
-                                    hx-on:htmx:before-request="
-                                          const container = document.getElementById('tabla-pedidos-container');
-                                          if (!container.classList.contains('oculto')){
-                                                event.preventDefault();
-                                                container.classList.add('oculto');
-                                                container.innerHTML = '';
-                                          }
-                                          "
-                                    hx-on:htmx:after-request="document.getElementById('tabla-pedidos-container').classList.remove('oculto');"
-                              >Pedidos recibidos
-                              </button>
+                              {{.BotonPedidos}}
 
                               <button 
                                     id="pedidos-realizados"
@@ -117,6 +101,7 @@
                                           "
                                     hx-on:htmx:after-request="document.getElementById('tabla-pedidos-container').classList.remove('oculto');"
                               >Movimientos
+                              </button>
                         </div>
                         <div id="tabla-pedidos-container" class="oculto">
 
@@ -131,7 +116,7 @@
                                     type="button"
                                     hx-on:click=
                                           "document.querySelector('.form-visible').classList.remove('form-visible');
-                                           document.getElementById('form-deposito').classList.add('form-visible');"                                    
+                                           document.getElementById('form-deposito').classList.add('form-visible');"
                                     >Depositar
                               </button>
                               <button 

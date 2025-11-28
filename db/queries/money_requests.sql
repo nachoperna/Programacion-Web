@@ -34,3 +34,6 @@ ORDER BY
 delete from money_requests where from_alias = $1 and to_alias = $2 
 returning *;
 
+-- name: GetRequestsToCount :one
+select count(*) from money_requests
+where to_alias = $1;

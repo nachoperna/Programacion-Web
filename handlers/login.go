@@ -2,14 +2,17 @@ package handlers
 
 import (
 	sqlc "TP_Especial/db/sqlc"
+	"TP_Especial/views"
+	"bytes"
 	"database/sql"
 	"fmt"
-	_ "github.com/lib/pq"
-	"golang.org/x/text/language"
-	"golang.org/x/text/message"
 	"html/template"
 	"net/http"
 	"strconv"
+
+	_ "github.com/lib/pq"
+	"golang.org/x/text/language"
+	"golang.org/x/text/message"
 )
 
 func (h *Handler) ConfirmLogin(w http.ResponseWriter, r *http.Request) {
@@ -116,6 +119,11 @@ func (h *Handler) Showhome(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Servir el template con datos actualizados
+	pedidos, _ := h.queries.GetRequestsToCount(h.ctx, values.Get("alias"))
+	buf := new(bytes.Buffer)
+	views.RequestCount(int(pedidos), datos["Alias"].(string)).Render(h.ctx, buf)
+	datos["BotonPedidos"] = template.HTML(buf.String())
+
 	tmp, err := template.ParseFiles("static/bienvenida.html")
 	if err != nil {
 		http.Error(w, "Error al cargar template", http.StatusInternalServerError)
