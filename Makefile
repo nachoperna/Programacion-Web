@@ -125,7 +125,7 @@ air: sqlc templ
 	@go build -o CandyPay
 
 clean:
-	@rm 0f CandyPay
+	@rm -f CandyPay
 # Reconstruir la base desde cero: baja, sube, espera, aplica migraciones y genera código
 reset: down up wait migrate-up sqlc templ
 
