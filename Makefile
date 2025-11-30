@@ -120,10 +120,16 @@ test:
 go:
 	go run . &
 	@sleep 2
+
+air: sqlc templ
+	@go build -o CandyPay
+
+clean:
+	@rm 0f CandyPay
 # Reconstruir la base desde cero: baja, sube, espera, aplica migraciones y genera código
 reset: down up wait migrate-up sqlc templ
 
-run: reset go test 
+run: reset clean go test 
 
 .PHONY: sqlc up down wait migrate-create migrate-up migrate-down migrate-reset templ reset go run test install-docker install-go install-templ install-sqlc install-hurl install-all
 
