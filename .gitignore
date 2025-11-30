@@ -1,3 +1,5 @@
 sqlc/
 views/*.go
+tmp/
+CandyPay
 LICENSE
