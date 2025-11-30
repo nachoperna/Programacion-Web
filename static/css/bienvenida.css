@@ -141,6 +141,12 @@
       font-size: 1rem;
       font-weight: 600;
       cursor: pointer;
+      transition: all 0.3s ease;
+}
+
+.footer button:hover {
+      background: #ffa0b5;
+      color: #011a63;
 }
 
 #pedidos-recibidos {
@@ -260,7 +266,11 @@ th.sort-desc::after {
       font-size: 0.95rem;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.3s ease;
+}
+
+.active-button {
+      background: #022B9A !important;
 }
 
 .operaciones-buttons button:hover {

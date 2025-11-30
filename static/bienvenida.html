@@ -112,34 +112,37 @@
                         <h2>Operaciones</h2>
 
                         <div class="operaciones-buttons">
-                              <button 
+                              <button
+                                    class="active-button"
                                     type="button"
-                                    hx-on:click=
-                                          "document.querySelector('.form-visible').classList.remove('form-visible');
-                                           document.getElementById('form-deposito').classList.add('form-visible');"
+                                    hx-on:click="toggleActiveForm(this, 'form-deposito');"
                                     >Depositar
                               </button>
                               <button 
                                     type="button"
-                                    hx-on:click=
-                                          "document.querySelector('.form-visible').classList.remove('form-visible');
-                                           document.getElementById('form-retiro').classList.add('form-visible');"
+                                    hx-on:click="toggleActiveForm(this, 'form-retiro');"
                                     >Retirar
                               </button>
                               <button 
                                     type="button" 
-                                    hx-on:click=
-                                          "document.querySelector('.form-visible').classList.remove('form-visible');
-                                           document.getElementById('form-transferencia').classList.add('form-visible');"
+                                    hx-on:click="toggleActiveForm(this, 'form-transferencia');"
                                     >Transferir
                               </button>
                               <button 
                                     type="button" 
-                                    hx-on:click=
-                                          "document.querySelector('.form-visible').classList.remove('form-visible');
-                                           document.getElementById('form-pedido').classList.add('form-visible');"
+                                    hx-on:click="toggleActiveForm(this, 'form-pedido');"
                                     >Pedir
                               </button>
+                              <script>
+                                    function toggleActiveForm(buttonElement, formId) {
+                                          document.querySelectorAll('.operaciones-buttons button.active-button').forEach(btn => {
+                                                btn.classList.remove('active-button');
+                                          });
+                                          buttonElement.classList.add('active-button');
+                                          document.querySelector('.form-visible').classList.remove('form-visible');
+                                          document.getElementById(formId).classList.add('form-visible');
+                                    }
+                              </script>
                         </div>
 
                         <div id="form-deposito" class="operation-form form-visible">
