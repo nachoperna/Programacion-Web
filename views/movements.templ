@@ -11,7 +11,8 @@ templ GetMovements(movimientos []model.Movimientos) {
 				<tr>
 					<th>Tipo</th>
 					<th>Monto</th>
-					<th>Fecha</th>
+					<th>Dia</th>
+					<th>Hora</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -19,7 +20,8 @@ templ GetMovements(movimientos []model.Movimientos) {
 					<tr>
 						<td>{ mov.Type }</td>
 						<td>$ { mov.Amount }</td>
-						<td>{ mov.Date.Format("02/01/2006") }</td>
+						<td>{ mov.Day }</td>
+						<td>{ mov.Time }</td>
 					</tr>
 				}
 			</tbody>
