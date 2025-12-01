@@ -5,6 +5,7 @@ import (
 	"TP_Especial/views"
 	"database/sql"
 	"fmt"
+	"io"
 	"net/http"
 	"strconv"
 
@@ -177,4 +178,14 @@ func (h *Handler) EnoughBalance(w http.ResponseWriter, alias string, monto float
 		return false
 	}
 	return true
+}
+
+func (h *Handler) GetBalance(w http.ResponseWriter, r *http.Request) {
+	balance, err := h.queries.GetBalance(h.ctx, r.URL.Query().Get("user"))
+	fmt.Printf("Obtiene balance:%s", balance.Balance)
+	if err != nil {
+		http.Error(w, "Error al obtener balance", http.StatusInternalServerError)
+		return
+	}
+	io.WriteString(w, balance.Balance)
 }

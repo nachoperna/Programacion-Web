@@ -147,6 +147,8 @@
 .footer button:hover {
       background: #ffa0b5;
       color: #011a63;
+      transform: translateY(-5px);
+      box-shadow: 0px 10px 15px;
 }
 
 #pedidos-recibidos {
@@ -294,4 +296,15 @@ th.sort-desc::after {
 
 .operation-form.form-visible {
       display: block;
+}
+
+.label-monto {
+      display: flex;
+}
+
+#monto-maximo {
+      margin-left: auto;
+      padding-right: 5px;
+      color: darkred;
+      cursor: pointer;
 }

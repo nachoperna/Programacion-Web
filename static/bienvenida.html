@@ -154,11 +154,17 @@
                                     hx-swap="innerHTML"
                               >
                                     <div class="form-group">
-                                          <label for="dep-alias-destino">Alias destino:</label>
+                                          <label for="dep-alias-destino">Alias destino</label>
                                           <input type="text" id="dep-alias-destino" name="alias" value="{{.Alias}}" readonly>
                                     </div>
                                     <div class="form-group">
-                                          <label for="dep-monto">Monto:</label>
+                                          <div class="label-monto">
+                                                <label for="dep-monto">Monto</label>
+                                                <label 
+                                                      id="monto-maximo"
+                                                      hx-on:click="document.getElementById('dep-monto').value = 99999999;"
+                                                >Máximo</label>
+                                          </div>
                                           <input type="number" id="dep-monto" name="amount" required>
                                     </div>
                                     <button type="submit" class="login-button">Confirmar Depósito</button>
@@ -175,11 +181,19 @@
                                     hx-swap="innerHTML"
                               >
                                     <div class="form-group">
-                                          <label for="ret-alias-origen">Tu Alias:</label>
+                                          <label for="ret-alias-origen">Tu Alias</label>
                                           <input type="text" id="ret-alias-origen" name="alias" value="{{.Alias}}" readonly>
                                     </div>
                                     <div class="form-group">
-                                          <label for="ret-monto">Monto:</label>
+                                          <div class="label-monto">
+                                                <label for="ret-monto">Monto</label>
+                                                <label 
+                                                      id="monto-maximo"
+                                                      hx-get="/getBalance?user={{.Alias}}"
+                                                      hx-swap="none"
+                                                      hx-on:htmx:after-request="document.getElementById('ret-monto').value = event.detail.xhr.responseText;"
+                                                >Máximo</label>
+                                          </div>
                                           <input type="number" id="ret-monto" name="amount" required>
                                     </div>
                                     <button type="submit" class="login-button">Confirmar Retiro</button>
@@ -197,15 +211,23 @@
                                     hx-swap="innerHTML"
                               >
                                     <div class="form-group">
-                                          <label for="trans-alias-origen">Alias origen:</label>
+                                          <label for="trans-alias-origen">Alias origen</label>
                                           <input type="text" id="trans-alias-origen" name="own_alias" value="{{.Alias}}" readonly>
                                     </div>
                                     <div class="form-group">
-                                          <label for="trans-alias-destino">Alias destino:</label>
+                                          <label for="trans-alias-destino">Alias destino</label>
                                           <input type="text" id="trans-alias-destino" name="other_alias" required>
                                     </div>
                                     <div class="form-group">
-                                          <label for="trans-monto">Monto:</label>
+                                          <div class="label-monto">
+                                                <label for="trans-monto">Monto</label>
+                                                <label 
+                                                      id="monto-maximo"
+                                                      hx-get="/getBalance?user={{.Alias}}"
+                                                      hx-swap="none"
+                                                      hx-on:htmx:after-request="document.getElementById('trans-monto').value = event.detail.xhr.responseText;"
+                                                >Máximo</label>
+                                          </div>
                                           <input type="number" id="trans-monto" name="amount" required>
                                     </div>
                                     <button type="submit" class="login-button">Confirmar Transferencia</button>
@@ -220,19 +242,19 @@
                                     hx-on:mismo_alias="alert('No se puede realizar un Pedido entre el mismo usuario')"
                               >
                                     <div class="form-group">
-                                          <label for="trans-alias-origen">Alias origen:</label>
+                                          <label for="trans-alias-origen">Alias origen</label>
                                           <input type="text" id="trans-alias-origen" name="from_alias" value="{{.Alias}}" readonly>
                                     </div>
                                     <div class="form-group">
-                                          <label for="trans-alias-destino">Alias destino:</label>
+                                          <label for="trans-alias-destino">Alias destino</label>
                                           <input type="text" id="trans-alias-destino" name="to_alias" required>
                                     </div>
                                     <div class="form-group">
-                                          <label for="pedido-monto">Monto:</label>
+                                          <label for="pedido-monto">Monto</label>
                                           <input type="number" id="pedido-monto" name="amount" required>
                                     </div>
                                     <div class="form-group">
-                                          <label for="pedido-mensaje">Mensaje:</label>
+                                          <label for="pedido-mensaje">Mensaje</label>
                                           <input type="text" id="pedido-mensaje" name="message">
                                     </div>
                                     <button type="submit" class="login-button">Confirmar Pedido</button>

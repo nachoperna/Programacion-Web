@@ -66,6 +66,9 @@ func main() {
 	// Procesamiento de TRANSFERENCIA
 	http.HandleFunc("/transfer", handler.Transfer)
 
+	// Procesamiento de OBTENCION DE BALANCE ACTUAL PARA EL MONTO MAXIMO DE LAS OPERACIONES
+	http.HandleFunc("/getBalance", handler.GetBalance)
+
 	// Procesamiento de PEDIDOS DE DINERO
 	http.HandleFunc("/moneyRequest", handler.RequestMoney)
 
