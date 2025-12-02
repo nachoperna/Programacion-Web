@@ -151,6 +151,11 @@
       box-shadow: 0px 10px 15px;
 }
 
+.pedidos-activo {
+      background: #ffa0b5 !important;
+      color: #011a63 !important;
+}
+
 #pedidos-recibidos {
       position: relative;
       display: inline-flex;
