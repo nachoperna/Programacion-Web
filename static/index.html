@@ -96,6 +96,7 @@
                               <form 
                                     hx-post="/register-confirmation"
                                     hx-on:alias_usado="alert('El alias ingresado ya se encuentra registrado en la base')"
+                                    hx-on:error_registro="alert('Hubo algun error de registro en nuestro sistema')"
                                     hx-on:htmx:responseError="alert('Error: ' + event.detail.xhr.responseText)"
                               >
                                     <div class="form-group">
