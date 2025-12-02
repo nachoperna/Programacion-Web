@@ -12,18 +12,12 @@ CREATE TABLE accounts(
       alias varchar(30) not null,
       balance numeric(10,2) not null default 0.00,
       last_movement_type varchar(30), -- DEPOSIT, TRANSFER, WHITDRAWAL
-      last_deposit timestamp,
-      last_deposit_amount numeric(10,2),
-      last_transfer timestamp,
-      last_transfer_account varchar(30),
-      last_transfer_amount numeric(10,2),
-      last_withdrawal timestamp,
-      last_withdrawal_amount numeric(10,2),
+      last_movement_amount numeric(10,2),
       CONSTRAINT Accounts_pk PRIMARY KEY(alias)
 );
 
 ALTER TABLE accounts ADD CONSTRAINT fk_user_account
-      FOREIGN KEY(alias) REFERENCES users(alias)
+      FOREIGN KEY (alias) REFERENCES users(alias)
 ;
 
 CREATE TABLE money_requests(
@@ -34,4 +28,9 @@ CREATE TABLE money_requests(
       message text
 );
 
--- Puede existir tambien una tabla Transferencia donde tenga informacion de cuenta origen, destino, fechas y montos
+CREATE TABLE movements_history(
+      alias varchar(30) not null,
+      type varchar(30) not null, -- DEPOSIT, TRANSFER, WHITDRAWAL
+      amount numeric(10,2) not null,
+      time timestamp not null
+);

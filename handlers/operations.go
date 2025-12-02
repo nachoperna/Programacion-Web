@@ -30,10 +30,11 @@ func (h *Handler) Deposit(w http.ResponseWriter, r *http.Request) {
 	}
 	datos["Email"] = r.URL.Query().Get("email")
 	info, err := h.queries.Deposit(h.ctx, sqlc.DepositParams{
-		Alias:             datos["Alias"],
-		LastDepositAmount: sql.NullString{String: fmt.Sprintf("%.2f", amount), Valid: true},
+		Alias:              datos["Alias"],
+		Balance:            fmt.Sprintf("%.2f", amount),
+		LastMovementType:   sql.NullString{String: "Deposito", Valid: true},
+		LastMovementAmount: sql.NullString{String: fmt.Sprintf("%.2f", amount), Valid: true},
 	})
-
 	if err != nil {
 		http.Error(w, "Error al Depositar", http.StatusInternalServerError)
 		return
@@ -63,8 +64,10 @@ func (h *Handler) Withdrawal(w http.ResponseWriter, r *http.Request) {
 	}
 	datos["Email"] = r.URL.Query().Get("email")
 	info, err := h.queries.Withdrawal(h.ctx, sqlc.WithdrawalParams{
-		Alias:                datos["Alias"],
-		LastWithdrawalAmount: sql.NullString{String: fmt.Sprintf("%.2f", amount), Valid: true},
+		Alias:              datos["Alias"],
+		Balance:            fmt.Sprintf("%.2f", amount),
+		LastMovementType:   sql.NullString{String: "Retiro", Valid: true},
+		LastMovementAmount: sql.NullString{String: fmt.Sprintf("%.2f", amount), Valid: true},
 	})
 	if err != nil {
 		http.Error(w, "Error al quitar dinero de la cuenta origen", http.StatusInternalServerError)
@@ -88,7 +91,8 @@ func (h *Handler) Transfer(w http.ResponseWriter, r *http.Request) {
 
 	amount, err := strconv.ParseFloat(datos["Amount"], 64)
 	if err != nil {
-		http.Error(w, "Monto inválido", http.StatusBadRequest)
+		w.Header().Set("HX-Trigger", "invalid_amount")
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
@@ -98,23 +102,24 @@ func (h *Handler) Transfer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if !h.EnoughBalance(w, datos["Alias_propio"], amount) {
-		redirectURL := fmt.Sprintf("/home?alias=%s&error=not_enough_balance", datos["Alias_propio"])
-		http.Redirect(w, r, redirectURL, http.StatusSeeOther)
+		w.Header().Set("HX-Trigger", "not_enough_balance")
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
 	_, err = h.queries.GetUser(h.ctx, datos["Alias_otro"])
 	if err == sql.ErrNoRows {
-		redirectURL := fmt.Sprintf("/home?alias=%s&error=alias_not_found", datos["Alias_propio"])
-		http.Redirect(w, r, redirectURL, http.StatusSeeOther)
+		w.Header().Set("HX-Trigger", "alias_not_found")
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
 	datos["Email"] = r.URL.Query().Get("email")
-	info, err := h.queries.Transfer(h.ctx, sqlc.TransferParams{
-		Alias:               datos["Alias_propio"],
-		LastTransferAccount: sql.NullString{String: datos["Alias_otro"], Valid: true},
-		LastTransferAmount:  sql.NullString{String: fmt.Sprintf("%.2f", amount), Valid: true},
+	info, err := h.queries.Withdrawal(h.ctx, sqlc.WithdrawalParams{
+		Alias:              datos["Alias_propio"],
+		Balance:            fmt.Sprintf("%.2f", amount),
+		LastMovementType:   sql.NullString{String: "Transferencia", Valid: true},
+		LastMovementAmount: sql.NullString{String: fmt.Sprintf("%.2f", amount), Valid: true},
 	})
 	if err != nil {
 		fmt.Printf("error: %v", err)
@@ -123,8 +128,10 @@ func (h *Handler) Transfer(w http.ResponseWriter, r *http.Request) {
 	}
 
 	_, err = h.queries.Deposit(h.ctx, sqlc.DepositParams{
-		Alias:             datos["Alias_otro"],
-		LastDepositAmount: sql.NullString{String: fmt.Sprintf("%.2f", amount), Valid: true},
+		Alias:              datos["Alias_otro"],
+		Balance:            fmt.Sprintf("%.2f", amount),
+		LastMovementType:   sql.NullString{String: "Deposito", Valid: true},
+		LastMovementAmount: sql.NullString{String: fmt.Sprintf("%.2f", amount), Valid: true},
 	})
 	if err != nil {
 		http.Error(w, "Error al depositar dinero en la cuenta destino", http.StatusInternalServerError)
@@ -160,6 +167,11 @@ func (h *Handler) RequestMoney(w http.ResponseWriter, r *http.Request) {
 		Message:   sql.NullString{String: datos["Mensaje"], Valid: true},
 	})
 
+	_ = h.queries.UpdateHistory(h.ctx, sqlc.UpdateHistoryParams{
+		Alias:  datos["Alias_propio"],
+		Type:   "Pedido",
+		Amount: fmt.Sprintf("%.2f", amount),
+	})
 	redirectURL := fmt.Sprintf("/home?alias=%s",
 		datos["Alias_propio"])
 
@@ -182,7 +194,6 @@ func (h *Handler) EnoughBalance(w http.ResponseWriter, alias string, monto float
 
 func (h *Handler) GetBalance(w http.ResponseWriter, r *http.Request) {
 	balance, err := h.queries.GetBalance(h.ctx, r.URL.Query().Get("user"))
-	fmt.Printf("Obtiene balance:%s", balance.Balance)
 	if err != nil {
 		http.Error(w, "Error al obtener balance", http.StatusInternalServerError)
 		return

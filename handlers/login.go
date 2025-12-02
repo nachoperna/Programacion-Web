@@ -73,7 +73,8 @@ func (h *Handler) ConfirmRegiser(w http.ResponseWriter, r *http.Request) {
 			Email:    datos["Email"],
 			Password: datos["Password"]})
 		if err != nil {
-			http.Redirect(w, r, "/?error=error_registro", http.StatusSeeOther)
+			w.Header().Set("HX-Trigger", "error_registro")
+			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
 	} else {

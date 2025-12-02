@@ -7,14 +7,7 @@ templ RequestCount(cantidad int, alias string) {
 		hx-get={ "/listRequestsTo?to_alias=" + alias }
 		hx-target="#tabla-pedidos-container"
 		hx-swap="innerHTML"
-		hx-on:htmx:before-request="
-                  const container = document.getElementById('tabla-pedidos-container');
-                  if (!container.classList.contains('oculto')){
-                        event.preventDefault();
-                        container.classList.add('oculto');
-                        container.innerHTML = '';
-                  }
-                  "
+		hx-on:htmx:before-request="toggleActiveButton(this); containerStatus();"
 		hx-on:htmx:after-request="document.getElementById('tabla-pedidos-container').classList.remove('oculto');"
 		hx-swap-oob="true"
 	>

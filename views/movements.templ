@@ -1,8 +1,8 @@
 package views 
 
-import model "TP_Especial/structs"
+import sqlc "TP_Especial/db/sqlc"
 
-templ GetMovements(movimientos []model.Movimientos) {
+templ GetMovements(movimientos []sqlc.GetHistoryRow) {
 	if (len(movimientos) == 0) {
 		<h3>No tienes movimientos realizados por el momento...</h3>
 	} else {
