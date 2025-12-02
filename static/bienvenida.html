@@ -74,14 +74,7 @@
                                     hx-get="/listRequestsFrom?from_alias={{.Alias}}"
                                     hx-target="#tabla-pedidos-container"
                                     hx-swap="innerHTML"
-                                    hx-on:htmx:before-request="
-                                          const container = document.getElementById('tabla-pedidos-container');
-                                          if (!container.classList.contains('oculto')){
-                                                event.preventDefault();
-                                                container.classList.add('oculto');
-                                                container.innerHTML = '';
-                                          }
-                                          "
+                                    hx-on:htmx:before-request="toggleActiveButton(this); containerStatus();"
                                     hx-on:htmx:after-request="document.getElementById('tabla-pedidos-container').classList.remove('oculto');"
                               >Pedidos realizados
                               </button>
@@ -91,17 +84,28 @@
                                     hx-get="/listMovements?alias={{.Alias}}"
                                     hx-target="#tabla-pedidos-container"
                                     hx-swap="innerHTML"
-                                    hx-on:htmx:before-request="
+                                    hx-on:htmx:before-request="toggleActiveButton(this); containerStatus();"
+                                    hx-on:htmx:after-request="document.getElementById('tabla-pedidos-container').classList.remove('oculto');"
+                              >Movimientos
+                              </button>
+                              <script>
+                                    function toggleActiveButton(buttonElement) {
+                                          buttonElement.classList.toggle('pedidos-activo');
+                                          document.querySelectorAll('.footer button').forEach(btn => {
+                                                if (btn != buttonElement){
+                                                      btn.classList.remove('pedidos-activo');
+                                                }
+                                          });
+                                    }
+                                    function containerStatus() {
                                           const container = document.getElementById('tabla-pedidos-container');
                                           if (!container.classList.contains('oculto')){
                                                 event.preventDefault();
                                                 container.classList.add('oculto');
                                                 container.innerHTML = '';
                                           }
-                                          "
-                                    hx-on:htmx:after-request="document.getElementById('tabla-pedidos-container').classList.remove('oculto');"
-                              >Movimientos
-                              </button>
+                                    }
+                              </script>
                         </div>
                         <div id="tabla-pedidos-container" class="oculto">
 
@@ -207,6 +211,7 @@
                                     hx-on:not_enough_balance="alert('No tienes fondos suficientes para realizar la operación')"
                                     hx-on:mismo_alias="alert('No se puede realizar una Transferencia entre el mismo usuario')"
                                     hx-on:invalid_amount="alert('Monto inválido para realizar la operación')"
+                                    hx-on:alias_not_found="alert('El usuario destino no se encuentra registrado en el sistema')"
                                     hx-target=".info-principal"
                                     hx-swap="innerHTML"
                               >
