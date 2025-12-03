@@ -188,6 +188,10 @@
       border-radius: 22px;
 }
 
+#tabla-pedidos {
+      border-bottom-right-radius: 0 !important;
+}
+
 .oculto {
       display: none;
 }
@@ -201,7 +205,8 @@
       word-break: break-word;
 }
 
-#tabla-pedidos th {
+#tabla-pedidos th,
+.botones-pagina a {
       color: white;
       cursor: pointer;
 }
@@ -229,11 +234,12 @@ th.sort-desc::after {
 
 #tabla-pedidos th:last-child,
 #tabla-pedidos td:last-child {
-      padding-right: 30px;
+      padding-right: 10px;
 }
 
 #tabla-pedidos th,
-#tabla-pedidos td {
+#tabla-pedidos td,
+.botones-pagina button {
       padding: 5px;
       text-align: left;
 }
@@ -254,6 +260,22 @@ th.sort-desc::after {
 
 .descartar-pedido-recibido:hover,
 .descartar-pedido-realizado:hover {
+      text-decoration: underline;
+}
+
+.botones-pagina {
+      display: flex;
+      gap: 20px;
+      justify-content: right;
+      padding-bottom: 10px;
+      padding-top: 10px;
+}
+
+.botones-pagina a {
+      font-size: 1rem;
+}
+
+.botones-pagina a:hover {
       text-decoration: underline;
 }
 

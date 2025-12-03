@@ -1,8 +1,11 @@
 package views 
 
-import sqlc "TP_Especial/db/sqlc"
+import (
+	sqlc "TP_Especial/db/sqlc"
+	"fmt"
+)
 
-templ GetMovements(movimientos []sqlc.GetHistoryRow) {
+templ GetMovements(movimientos []sqlc.GetHistoryRow, alias string, offset int, siguiente bool) {
 	if (len(movimientos) == 0) {
 		<h3>No tienes movimientos realizados por el momento...</h3>
 	} else {
@@ -26,5 +29,25 @@ templ GetMovements(movimientos []sqlc.GetHistoryRow) {
 				}
 			</tbody>
 		</table>
+		<div class="botones-pagina">
+			if (offset > 0) {
+				<a
+					type="button"
+					class="boton-anterior"
+					hx-get={ fmt.Sprintf("/listMovements?alias=%s&order=anterior&offset=%d", alias, offset) }
+					hx-target="#tabla-pedidos-container"
+					hx-swap="innerHTML"
+				>Anterior</a>
+			}
+			if (siguiente) {
+				<a
+					type="button"
+					class="boton-siguiente"
+					hx-get={ fmt.Sprintf("/listMovements?alias=%s&order=siguiente&offset=%d", alias, offset) }
+					hx-target="#tabla-pedidos-container"
+					hx-swap="innerHTML"
+				>Siguiente</a>
+			}
+		</div>
 	}
 }
