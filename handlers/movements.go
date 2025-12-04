@@ -3,10 +3,8 @@ package handlers
 import (
 	db "TP_Especial/db/sqlc"
 	"TP_Especial/views"
-	"net/http"
-	"strconv"
-
 	_ "github.com/lib/pq"
+	"net/http"
 )
 
 func (h *Handler) ListMovements(w http.ResponseWriter, r *http.Request) {
@@ -29,19 +27,4 @@ func (h *Handler) ListMovements(w http.ResponseWriter, r *http.Request) {
 	} else {
 		views.GetMovements(historial, alias, offset, true).Render(h.ctx, w)
 	}
-}
-
-func (h *Handler) GetOffset(r *http.Request) int {
-	orden := r.URL.Query().Get("order")
-	offset := r.URL.Query().Get("offset")
-	aux := 0
-	if orden != "" && offset != "" {
-		off, _ := strconv.Atoi(offset)
-		if orden == "anterior" {
-			aux = int(off - h.RowLimitTable)
-		} else {
-			aux = int(off + h.RowLimitTable)
-		}
-	}
-	return aux
 }

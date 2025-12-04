@@ -39,7 +39,7 @@ func (h *Handler) Deposit(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error al Depositar", http.StatusInternalServerError)
 		return
 	}
-	views.SetInfo(datos["Alias"], info.Balance, datos["Email"], info.LastMovementType.String).Render(h.ctx, w)
+	views.SetInfo(datos["Alias"], h.balanceFormateado(info.Balance), datos["Email"], info.LastMovementType.String).Render(h.ctx, w)
 }
 
 func (h *Handler) Withdrawal(w http.ResponseWriter, r *http.Request) {
@@ -74,7 +74,7 @@ func (h *Handler) Withdrawal(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	views.SetInfo(datos["Alias"], info.Balance, datos["Email"], info.LastMovementType.String).Render(h.ctx, w)
+	views.SetInfo(datos["Alias"], h.balanceFormateado(info.Balance), datos["Email"], info.LastMovementType.String).Render(h.ctx, w)
 }
 
 func (h *Handler) Transfer(w http.ResponseWriter, r *http.Request) {
@@ -138,7 +138,7 @@ func (h *Handler) Transfer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	views.SetInfo(datos["Alias_propio"], info.Balance, datos["Email"], info.LastMovementType.String).Render(h.ctx, w)
+	views.SetInfo(datos["Alias_propio"], h.balanceFormateado(info.Balance), datos["Email"], info.LastMovementType.String).Render(h.ctx, w)
 }
 
 func (h *Handler) RequestMoney(w http.ResponseWriter, r *http.Request) {
