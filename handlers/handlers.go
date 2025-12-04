@@ -6,13 +6,15 @@ import (
 )
 
 type Handler struct {
-	queries *sqlc.Queries
-	ctx     context.Context
+	queries       *sqlc.Queries
+	ctx           context.Context
+	RowLimitTable int
 }
 
 func NewHandler(queries *sqlc.Queries, ctx context.Context) *Handler {
 	return &Handler{
-		queries: queries,
-		ctx:     ctx,
+		queries:       queries,
+		ctx:           ctx,
+		RowLimitTable: 3,
 	}
 }

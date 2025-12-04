@@ -22,12 +22,14 @@ func (h *Handler) ListRequestsTo(w http.ResponseWriter, r *http.Request) {
 	alias := r.URL.Query().Get("to_alias")
 	sort_by := r.URL.Query().Get("sort_by")
 	sort_order := r.URL.Query().Get("sort_order")
+	offset := h.GetOffset(r)
 	if sort_by == "" {
 		sort_by = "amount"
 		sort_order = "desc"
 	}
 	pedidos, err := h.queries.GetRequestsTo(h.ctx, sqlc.GetRequestsToParams{
 		ToAlias:   alias,
+		Offset:    int32(offset),
 		SortBy:    sort_by,
 		SortOrder: sort_order,
 	})
@@ -43,19 +45,29 @@ func (h *Handler) ListRequestsTo(w http.ResponseWriter, r *http.Request) {
 	if sort_order == "asc" {
 		nextSortOrder = "desc"
 	}
-	views.GetRequestsTo(pedidos, sort_by, sort_order, nextSortOrder).Render(h.ctx, w)
+	siguientes, _ := h.queries.GetRequestsToSiguientes(h.ctx, sqlc.GetRequestsToSiguientesParams{
+		ToAlias: alias,
+		Offset:  int32(offset + h.RowLimitTable),
+	})
+	if siguientes == 0 {
+		views.GetRequestsTo(pedidos, sort_by, sort_order, nextSortOrder, offset, false).Render(h.ctx, w)
+	} else {
+		views.GetRequestsTo(pedidos, sort_by, sort_order, nextSortOrder, offset, true).Render(h.ctx, w)
+	}
 }
 
 func (h *Handler) ListRequestsFrom(w http.ResponseWriter, r *http.Request) {
 	alias := r.URL.Query().Get("from_alias")
 	sort_by := r.URL.Query().Get("sort_by")
 	sort_order := r.URL.Query().Get("sort_order")
+	offset := h.GetOffset(r)
 	if sort_by == "" {
 		sort_by = "amount"
 		sort_order = "desc"
 	}
 	pedidos, err := h.queries.GetRequestsFrom(h.ctx, sqlc.GetRequestsFromParams{
 		FromAlias: alias,
+		Offset:    int32(offset),
 		SortBy:    sort_by,
 		SortOrder: sort_order,
 	})
@@ -71,7 +83,15 @@ func (h *Handler) ListRequestsFrom(w http.ResponseWriter, r *http.Request) {
 	if sort_order == "asc" {
 		nextSortOrder = "desc"
 	}
-	views.GetRequestsFrom(pedidos, sort_by, sort_order, nextSortOrder).Render(h.ctx, w)
+	siguientes, _ := h.queries.GetRequestsFromSiguientes(h.ctx, sqlc.GetRequestsFromSiguientesParams{
+		FromAlias: alias,
+		Offset:    int32(offset + h.RowLimitTable),
+	})
+	if siguientes == 0 {
+		views.GetRequestsFrom(pedidos, sort_by, sort_order, nextSortOrder, offset, false).Render(h.ctx, w)
+	} else {
+		views.GetRequestsFrom(pedidos, sort_by, sort_order, nextSortOrder, offset, true).Render(h.ctx, w)
+	}
 }
 
 func (h *Handler) DeleteRequestsTo(w http.ResponseWriter, r *http.Request) {

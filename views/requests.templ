@@ -1,8 +1,10 @@
 package views 
 
+import "fmt"
+
 import sqlc "TP_Especial/db/sqlc"
 
-templ GetRequestsTo(pedidos []sqlc.GetRequestsToRow, sort_by, order, next_order string) {
+templ GetRequestsTo(pedidos []sqlc.GetRequestsToRow, sort_by, order, next_order string, offset int, siguiente bool) {
 	<table id="tabla-pedidos">
 		<thead>
 			<tr>
@@ -45,7 +47,7 @@ templ GetRequestsTo(pedidos []sqlc.GetRequestsToRow, sort_by, order, next_order 
 							class="descartar-pedido-recibido"
 							hx-delete={ "/deleteRequestsTo?from_alias=" + pedido.FromAlias + "&to_alias=" + pedido.ToAlias }
 							hx-target="#tabla-pedidos-container"
-                                          hx-confirm="Seguro que desea borrar este pedido?"
+							hx-confirm="Seguro que desea borrar este pedido?"
 							hx-swap="innerHTML"
 						>
 							Descartar
@@ -55,9 +57,29 @@ templ GetRequestsTo(pedidos []sqlc.GetRequestsToRow, sort_by, order, next_order 
 			}
 		</tbody>
 	</table>
+	<div class="botones-pagina">
+		if (offset > 0) {
+			<a
+				type="button"
+				class="boton-anterior"
+				hx-get={ fmt.Sprintf("/listRequestsTo?to_alias=%s&order=anterior&offset=%d", pedidos[0].ToAlias, offset) }
+				hx-target="#tabla-pedidos-container"
+				hx-swap="innerHTML"
+			>Anterior</a>
+		}
+		if (siguiente) {
+			<a
+				type="button"
+				class="boton-siguiente"
+				hx-get={ fmt.Sprintf("/listRequestsTo?to_alias=%s&order=siguiente&offset=%d", pedidos[0].ToAlias, offset) }
+				hx-target="#tabla-pedidos-container"
+				hx-swap="innerHTML"
+			>Siguiente</a>
+		}
+	</div>
 }
 
-templ GetRequestsFrom(pedidos []sqlc.GetRequestsFromRow, sort_by, order, next_order string) {
+templ GetRequestsFrom(pedidos []sqlc.GetRequestsFromRow, sort_by, order, next_order string, offset int, siguiente bool) {
 	<table id="tabla-pedidos">
 		<thead>
 			<tr>
@@ -100,7 +122,7 @@ templ GetRequestsFrom(pedidos []sqlc.GetRequestsFromRow, sort_by, order, next_or
 							class="descartar-pedido-realizado"
 							hx-delete={ "/deleteRequestsTo?from_alias=" + pedido.FromAlias + "&to_alias=" + pedido.ToAlias }
 							hx-target="#tabla-pedidos-container"
-                                          hx-confirm="Seguro que desea borrar este pedido?"
+							hx-confirm="Seguro que desea borrar este pedido?"
 							hx-swap="innerHTML"
 						>
 							Descartar
@@ -110,6 +132,26 @@ templ GetRequestsFrom(pedidos []sqlc.GetRequestsFromRow, sort_by, order, next_or
 			}
 		</tbody>
 	</table>
+	<div class="botones-pagina">
+		if (offset > 0) {
+			<a
+				type="button"
+				class="boton-anterior"
+				hx-get={ fmt.Sprintf("/listRequestsFrom?from_alias=%s&order=anterior&offset=%d", pedidos[0].FromAlias, offset) }
+				hx-target="#tabla-pedidos-container"
+				hx-swap="innerHTML"
+			>Anterior</a>
+		}
+		if (siguiente) {
+			<a
+				type="button"
+				class="boton-siguiente"
+				hx-get={ fmt.Sprintf("/listRequestsFrom?from_alias%s&order=siguiente&offset=%d", pedidos[0].FromAlias, offset) }
+				hx-target="#tabla-pedidos-container"
+				hx-swap="innerHTML"
+			>Siguiente</a>
+		}
+	</div>
 }
 
 templ SinPedidos(recibidos bool) {
