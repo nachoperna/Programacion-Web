@@ -1,11 +1,17 @@
 package views
 
+import (
+	"golang.org/x/text/language"
+	"golang.org/x/text/message"
+	"strconv"
+)
+
 templ SetInfo(alias, balance, email, last_movement string) {
 	<div class="tarjeta-balance">
 		<label>Balance</label>
 		<span id="balance">
 			if balance != "" {
-				$ { balance } ARS
+				$ { balanceFormateado(balance) } ARS
 			} else {
 				$ 0.00 ARS
 			}
@@ -31,4 +37,11 @@ templ SetInfo(alias, balance, email, last_movement string) {
 			</span>
 		</div>
 	</div>
+}
+
+func balanceFormateado(balance string) string {
+	printer := message.NewPrinter(language.Spanish)
+	balance_float, _ := strconv.ParseFloat(balance, 64)
+	balance_formateado := printer.Sprintf("%.2f", balance_float)
+	return balance_formateado
 }
