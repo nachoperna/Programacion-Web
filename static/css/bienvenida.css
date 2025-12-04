@@ -178,6 +178,10 @@
       z-index: 10;
 }
 
+#tabla-pedidos-container {
+      overflow: initial !important;
+}
+
 #tabla-pedidos-container,
 #tabla-pedidos {
       width: 100%;
@@ -269,6 +273,7 @@ th.sort-desc::after {
       justify-content: right;
       padding-bottom: 10px;
       padding-top: 10px;
+      padding-bottom: 0px;
 }
 
 .botones-pagina a {
@@ -334,4 +339,10 @@ th.sort-desc::after {
       padding-right: 5px;
       color: darkred;
       cursor: pointer;
+}
+
+.operacion-exitosa {
+      background: #10b981 !important;
+      transition: background 0.3s ease;
+      transform: scale(1.02);
 }
