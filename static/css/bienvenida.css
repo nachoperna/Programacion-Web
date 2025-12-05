@@ -49,12 +49,12 @@
       gap: 30px;
 }
 
-/* Contenedor para la información del usuario */
 .tarjeta-balance {
       display: flex;
       flex-direction: column;
       color: #011a63;
       text-align: center;
+      animation: nuevo-balance 1s ease forwards;
 }
 
 #balance {
@@ -303,10 +303,6 @@ th.sort-desc::after {
       transition: all 0.3s ease;
 }
 
-.active-button {
-      background: #022B9A !important;
-}
-
 .operaciones-buttons button:hover {
       transform: translateY(-2px);
       box-shadow: 0 5px 15px rgba(124, 58, 237, 0.4);
@@ -345,4 +341,18 @@ th.sort-desc::after {
       background: #10b981 !important;
       transition: background 0.3s ease;
       transform: scale(1.02);
+}
+
+@keyframes nuevo-balance {
+      0% {
+            transform: scale(1);
+      }
+
+      50% {
+            transform: scale(1.1);
+      }
+
+      100% {
+            transform: scale(1);
+      }
 }
