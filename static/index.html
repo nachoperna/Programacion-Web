@@ -30,22 +30,27 @@
                         <div class="login-options">
                               <button 
                                     type="button" 
-                                    class="client-button"
-                                    hx-on:click="
-                                          document.getElementById('register-form').style.display = 'none';
-                                          document.getElementById('login-form').style.display = 'block';
-                                          "
+                                    class="client-button active-button"
+                                    hx-on:click="toggleActiveForm(this, 'login-form');"
                                     >Soy cliente
                               </button> 
                               <button 
                                     type="button" 
                                     class="noclient-button" 
-                                    hx-on:click="
-                                          document.getElementById('login-form').style.display = 'none';
-                                          document.getElementById('register-form').style.display = 'block';
-                                          "
+                                    hx-on:click="toggleActiveForm(this, 'register-form');"
                                     >No soy cliente
                               </button> 
+                              <script>
+                                    function toggleActiveForm(buttonElement, formId) {
+                                          document.querySelectorAll('.login-options button.active-button').forEach(btn => {
+                                                btn.classList.remove('active-button');
+                                          });
+                                          buttonElement.classList.add('active-button');
+                                          document.getElementById('login-form').classList.add('form-oculto');
+                                          document.getElementById('register-form').classList.add('form-oculto');
+                                          document.getElementById(formId).classList.remove('form-oculto');
+                                    }
+                              </script>
                         </div>
                         <div class="login-form" id="login-form">
                               <h2>Iniciar Sesión</h2>
@@ -91,7 +96,7 @@
                               </form>
                         </div>
 
-                        <div class="register-form" id="register-form">
+                        <div class="register-form form-oculto" id="register-form">
                               <h2>Registrarme</h2>
                               <form 
                                     hx-post="/register-confirmation"

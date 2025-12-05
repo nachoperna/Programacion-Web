@@ -186,3 +186,11 @@ body {
       color: #3730a3;
       font-weight: 500;
 }
+
+.active-button {
+      background: #022B9A !important;
+}
+
+.form-oculto {
+      display: none !important;
+}
