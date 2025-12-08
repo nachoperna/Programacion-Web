@@ -3,6 +3,9 @@
 ## Integrantes
 - Ignacio Agustin Perna
 
+## Descripción
+Este proyecto consta de una billetera virtual con un backend desarrollado en Go y SQLC, un persistencia de datos mantenida en PostgreSQL sobre un contenedor Docker y un frontend con HTML, HTMX, CSS y componentes templ para inserciones dinámicas.
+
 ## Dependencias
 Este proyecto necesita de las siguientes dependencias y sus versiones especificadas para funcionar correctamente:
 - **Docker 28.5.1 o superior** (make install-docker)
@@ -10,15 +13,6 @@ Este proyecto necesita de las siguientes dependencias y sus versiones especifica
 - **templ v0.3.960 o superior** (make install-templ)
 - **sqlc v1.30.0 o superior** (make install-sqlc)
 - **hurl 4.2.0 o superior** (make install-hurl)
-
-## Descripción
-Este proyecto consta de una billetera virtual que tendrá todas las funcionalidades principales de la misma:
-- Creación de cuenta con formularios de registro e inicios de sesión posteriores
-- Depositar y retirar dinero
-- Transferr a cualquier usuario con un alias registrado
-- Pedir dinero a otro usuario
-- Pedir préstamos con fechas de pago
-- Invertir dinero y generar rendimientos
 
 ## Instrucciones de Uso
 1. Abrir una terminal localizada dentro de la carpeta donde se encuentra este archivo README.
@@ -59,15 +53,14 @@ En primer momento la base se organiza en dos tablas principales:
 
 - Money_requests: donde se almacenan todos los pedidos de dinero que hacen los usuarios con un alias origen y otro destino, junto con el monto pedido y un mensaje.
 
-- Triggers: se tienen por el momento dos triggers que se activan, cuando el usuario se registra en la base se crea automaticamente una cuenta con los valores por defecto y el alias registrado, y cuando se borra un usuario del sistema, se borra automaticamente la cuenta asociada que tenia ese usuario.
+- Movements_history: donde se almacenan todos los movimientos de operaciones del usuario relacionados a su propio dinero.
+
+- Triggers: se tienen  dos triggers que se activan, cuando el usuario se registra en la base se crea automaticamente una cuenta con los valores por defecto y el alias registrado, y cuando se borra un usuario del sistema, se borra automaticamente la cuenta asociada que tenia ese usuario. Además cuando un usuario realiza una operación con su dinero, los datos de la misma se insertan en la tabla de historial de movimientos con su alias como clave.
 
 ## Funcionalidades Actuales
-### Servicio de página principal
-Se sirve un [index.html](./static/index.html) que organiza una página de bienvenida con un **Título**, **Logos** y **Diseños personalizados** donde encontramos información de lo que podremos hacer dentro de la página y una sección para darnos de alta como usuario si no somos clientes ya, y una seccion para ingresar a nuestra cuenta si ya somos clientes.
 
 ### Inicio de sesión y Registro
-Debemos primero registrar un mail junto con un alias y contraseña en la página para darnos de alta como usuario en la base de datos. **Tanto el alias como el mail deben ser únicos** dentro del registro de la página, caso contrario se lo
-notará con un aviso al usuario. Luego de ingresar nuestros datos correctos nos iremos redirigidos a una sección de [bienvenida](./static/bienvenida.html) donde se mostrarán nuestros datos recién ingresados junto con nuestro balance de cuenta actual y el ultimo movimiento que hicimos.
+Debemos primero registrar un mail junto con un alias y contraseña en la página para darnos de alta como usuario en la base de datos. **Tanto el alias como el mail deben ser únicos** dentro del registro de la página, caso contrario se lo notará con un aviso al usuario. Luego de ingresar nuestros datos correctos nos iremos redirigidos a una sección de [bienvenida](./static/bienvenida.html) donde se mostrarán nuestros datos recién ingresados junto con nuestro balance de cuenta actual y el ultimo movimiento que hicimos.
 
 ### Depósitos
 En esta función el usuario tiene ingresado por defecto su propio alias y solo debe colocar el monto a depositar en su cuenta, donde una función en Go parsea
@@ -98,13 +91,3 @@ Al visualizar la tabla de pedidos de dinero, por defecto se encuentra ordenada s
 
 ### Visualización de últimos movimientos
 Al lado de los botones para ver los pedidos de dinero recibidos y realizados en el Home del usuario, vamos a poder acceder a la tabla de sus últimos movimientos donde aparece el tipo, monto y su fecha de realización. Se puede probar rápidamente depositando algún monto válido en la cuenta del usuario existente "alias1", transfiriendo a los otros usuarios dados de alta en el sistema o retirando el dinero depositado. 
-
-## TP6
-### Evitar la recarga de páginas
-Luego de integrar HTMX en mi sistema reemplazando todas las intervenciones de javascript y acciones de formulario, uno de los apartados mas importantes para evitar la recarga de página innecesariamente se centra en la obtención de las tablas de pedido de dinero recibidos, pedidos de dinero realizados y ultimos movimientos, donde el usuario al clickear uno de estos botones, el sistema primero utiliza un **hx-on:htmx:before-request** para saber si el contenedor donde será insertada la tabla está oculto (porque tiene la clase 'oculto' que le quita el display) o visible, significando que la tabla está desplegada y lo que quiere el usuario es ocultarla.
-
-- **Contenedor visible** : Se agrega la clase 'oculto' al contenedor para sacarlo de la vista del usuario y borramos su contenido interno
-- **Contenedor oculto**: Lo que el usuario quiere es ver la tabla, entonces se envía un **hx-get** al endpoint especifico del servidor y el alias del usuario, donde renderizamos la tabla que obtuvimos de una consulta sql n un componente templ que devolvemos al Home del usuario para ser insertado en el lugar que indica el **hx-target** y con el parámetro de que debe hacerlo en su contenido interno con **hx-swap='innerHTML'**.
-
-Además si el usuario quiere eliminar un pedido de dinero recibido o realizado, puede hacerlo clickeando el link **Descartar** de la columna de Acción, el cual primero ejecutará un **hx-confirm** para que el usuario se asegure que desea realizar esa acción, y luego enviará una petición **hx-delete** al servidor con el endpoint necesario y se encargará de renderizar nuevamente la tabla en el Home que el usuario está viendo sin necesidad de recargas.
-
