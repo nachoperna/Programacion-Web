@@ -1,10 +1,10 @@
 package views
 
-templ RequestCount(cantidad int, alias string) {
+templ RequestCount(cantidad int, alias, email string) {
 	<button
 		id="pedidos-recibidos"
 		type="button"
-		hx-get={ "/listRequestsTo?to_alias=" + alias }
+		hx-get={ "/listRequestsTo?to_alias=" + alias + "&email=" + email }
 		hx-target="#tabla-pedidos-container"
 		hx-swap="innerHTML"
 		hx-on:htmx:before-request="toggleActiveButton(this); containerStatus();"

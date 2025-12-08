@@ -356,3 +356,33 @@ th.sort-desc::after {
             transform: scale(1);
       }
 }
+
+.acciones-request {
+      display: flex;
+      flex-direction: column;
+      transition: all 0.3s ease;
+}
+
+.acciones-request summary {
+      list-style: none;
+      cursor: pointer;
+      color: #521f9f;
+}
+
+.acciones-request summary::after {
+      content: " ⏷"
+}
+
+.acciones-request summary::-webkit-details-marker {
+      display: none;
+}
+
+.pagar-request {
+      padding-left: 3px;
+      color: darkgreen;
+}
+
+.pagar-request:hover {
+      text-decoration: underline;
+      cursor: pointer;
+}

@@ -122,7 +122,7 @@ func (h *Handler) Showhome(w http.ResponseWriter, r *http.Request) {
 	// Servir el template con datos actualizados
 	pedidos, _ := h.queries.GetRequestsToCount(h.ctx, values.Get("alias"))
 	buf := new(bytes.Buffer)
-	views.RequestCount(int(pedidos), datos["Alias"].(string)).Render(h.ctx, buf)
+	views.RequestCount(int(pedidos), datos["Alias"].(string), datos["Email"].(string)).Render(h.ctx, buf)
 	datos["BotonPedidos"] = template.HTML(buf.String())
 
 	tmp, err := template.ParseFiles("static/bienvenida.html")

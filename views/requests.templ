@@ -4,7 +4,8 @@ import "fmt"
 
 import sqlc "TP_Especial/db/sqlc"
 
-templ GetRequestsTo(pedidos []sqlc.GetRequestsToRow, sort_by, order, next_order string, offset int, siguiente bool) {
+templ GetRequestsTo(pedidos []sqlc.GetRequestsToRow, sort_by, order, next_order string, offset int, siguiente bool,
+	email string) {
 	<table id="tabla-pedidos">
 		<thead>
 			<tr>
@@ -42,16 +43,32 @@ templ GetRequestsTo(pedidos []sqlc.GetRequestsToRow, sort_by, order, next_order 
 					<td>{ pedido.Message.String }</td>
 					<td>{ pedido.Day }</td>
 					<td>{ pedido.Time }</td>
-					<td>
-						<a
-							class="descartar-pedido-recibido"
-							hx-delete={ "/deleteRequestsTo?from_alias=" + pedido.FromAlias + "&to_alias=" + pedido.ToAlias }
-							hx-target="#tabla-pedidos-container"
-							hx-confirm="Seguro que desea borrar este pedido?"
-							hx-swap="innerHTML"
-						>
-							Descartar
-						</a>
+					<td class="td-accion">
+						<details class="acciones-request">
+							<summary>Elegir</summary>
+							<a
+								class="descartar-pedido-recibido"
+								hx-delete={ "/deleteRequestsTo?from_alias=" + pedido.FromAlias + "&to_alias=" + pedido.ToAlias + "&email=" + email }
+								hx-target="#tabla-pedidos-container"
+								hx-confirm="Seguro que desea borrar este pedido?"
+								hx-swap="innerHTML"
+							>
+								Descartar
+							</a>
+							<a
+								class="pagar-request"
+								hx-post={ "/transfer?own_alias=" + pedido.ToAlias + "&other_alias=" + pedido.FromAlias + "&amount=" + pedido.Amount + "&email=" + email }
+								hx-confirm={ "Seguro que desea realizar el pago a " + pedido.FromAlias + "?" }
+								hx-on:not_enough_balance="alert('No tienes fondos suficientes para realizar la operación')"
+								hx-on:mismo_alias="alert('No se puede realizar una Transferencia entre el mismo usuario')"
+								hx-on:invalid_amount="alert('Monto inválido para realizar la operación')"
+								hx-on:alias_not_found="alert('El usuario destino no se encuentra registrado en el sistema')"
+								hx-target=".info-principal"
+								hx-swap="innerHTML"
+							>
+								Pagar
+							</a>
+						</details>
 					</td>
 				</tr>
 			}

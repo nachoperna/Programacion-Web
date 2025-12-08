@@ -50,9 +50,9 @@ func (h *Handler) ListRequestsTo(w http.ResponseWriter, r *http.Request) {
 		Offset:  int32(offset + h.RowLimitTable),
 	})
 	if siguientes == 0 {
-		views.GetRequestsTo(pedidos, sort_by, sort_order, nextSortOrder, offset, false).Render(h.ctx, w)
+		views.GetRequestsTo(pedidos, sort_by, sort_order, nextSortOrder, offset, false, r.URL.Query().Get("email")).Render(h.ctx, w)
 	} else {
-		views.GetRequestsTo(pedidos, sort_by, sort_order, nextSortOrder, offset, true).Render(h.ctx, w)
+		views.GetRequestsTo(pedidos, sort_by, sort_order, nextSortOrder, offset, true, r.URL.Query().Get("email")).Render(h.ctx, w)
 	}
 }
 
@@ -108,7 +108,7 @@ func (h *Handler) DeleteRequestsTo(w http.ResponseWriter, r *http.Request) {
 	h.ListRequestsTo(w, r)
 
 	pedidos, _ := h.queries.GetRequestsToCount(h.ctx, to_alias)
-	views.RequestCount(int(pedidos), to_alias).Render(h.ctx, w)
+	views.RequestCount(int(pedidos), to_alias, r.URL.Query().Get("email")).Render(h.ctx, w)
 }
 
 func (h *Handler) CreateRequest(w http.ResponseWriter, r *http.Request) {
