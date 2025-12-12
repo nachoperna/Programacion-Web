@@ -13,7 +13,6 @@ body {
       align-items: center;
       padding: 20px;
       background-image: url("../img/fondo v2.webp");
-      /* background-color: teal; */
       background-size: cover;
 }
 
@@ -41,20 +40,19 @@ body {
       display: flex;
       flex-direction: column;
       justify-content: center;
-      white-space: nowrap;
       overflow: hidden;
       align-items: flex-start;
 }
 
 .info-column h1 {
-      font-size: 2.5rem;
+      font-size: max(2.5rem, 5%);
       margin-bottom: 20px;
       font-weight: 700;
       font-family: "Arial Rounded MT Bold", "Arial Rounded", Arial, sans-serif;
 }
 
 .info-column p {
-      font-size: 1.1rem;
+      font-size: max(1.1rem, 5%);
       margin-bottom: 30px;
       line-height: 1.6;
 }
@@ -67,7 +65,7 @@ body {
       margin-bottom: 15px;
       padding-left: 30px;
       position: relative;
-      font-size: 1.1rem;
+      font-size: max(1.1rem, 5%);
 }
 
 .info-column li:before {
@@ -85,43 +83,6 @@ body {
       padding: 40px 40px;
       display: block;
       align-items: center;
-}
-
-/* Responsive */
-@media (max-width: 900px) {
-      .two-column-layout {
-            flex-direction: column;
-      }
-
-      .info-column,
-      .form-column {
-            padding: 40px 30px;
-      }
-}
-
-@media (max-width: 480px) {
-
-      .info-column,
-      .form-column {
-            padding: 30px 20px;
-      }
-
-      .info-column h1 {
-            font-size: 2rem;
-      }
-
-      .login-form h2 {
-            font-size: 1.8rem;
-      }
-
-      .form-options {
-            flex-direction: column;
-            align-items: flex-start;
-      }
-
-      .forgot-password {
-            margin-top: 10px;
-      }
 }
 
 .ruta_invalida {
@@ -193,4 +154,28 @@ body {
 
 .form-oculto {
       display: none !important;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+      .main-container {
+            min-width: 0px;
+      }
+
+      .two-column-layout {
+            flex-direction: column;
+      }
+
+      .info-column,
+      .form-column {
+            padding: 40px 30px;
+      }
+
+      .info-column h1 {
+            word-wrap: break-word !important;
+      }
+
+      .info-column ul {
+            display: none;
+      }
 }

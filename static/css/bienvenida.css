@@ -413,3 +413,25 @@ th.sort-desc::after {
       text-decoration: underline;
       cursor: pointer;
 }
+
+@media (max-width: 900px) {
+
+      h2,
+      h3,
+      span,
+      label,
+      button {
+            transform-origin: left center;
+      }
+
+      .form-column h2,
+      h3,
+      button {
+            transform-origin: center;
+      }
+
+      .tarjetas,
+      .footer {
+            column-gap: 0px;
+      }
+}
