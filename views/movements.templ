@@ -30,6 +30,7 @@ templ GetMovements(movimientos []sqlc.GetHistoryRow, alias string, offset int, s
 			</tbody>
 		</table>
 		<div class="botones-pagina">
+			<a href={ "/movementsToCsv?alias=" + alias }>Decsargar CSV</a>
 			if (offset > 0) {
 				<a
 					type="button"

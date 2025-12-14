@@ -23,23 +23,31 @@ func (h *Handler) Deposit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	info, valido := h.DepositLogic(w, datos["Alias"], amount, "Deposito")
+	if valido {
+		datos["Email"] = r.URL.Query().Get("email")
+		views.SetInfo(datos["Alias"], h.balanceFormateado(info.Balance), datos["Email"], info.LastMovementType.String).Render(h.ctx, w)
+	}
+}
+
+func (h *Handler) DepositLogic(w http.ResponseWriter, alias string, amount float64, operation_type string) (sqlc.DepositRow, bool) {
 	if amount <= 0 {
 		w.Header().Set("HX-Trigger", "invalid_amount")
 		w.WriteHeader(http.StatusBadRequest)
-		return
+		return sqlc.DepositRow{}, false
 	}
-	datos["Email"] = r.URL.Query().Get("email")
 	info, err := h.queries.Deposit(h.ctx, sqlc.DepositParams{
-		Alias:              datos["Alias"],
+		Alias:              alias,
 		Balance:            fmt.Sprintf("%.2f", amount),
-		LastMovementType:   sql.NullString{String: "Deposito", Valid: true},
+		LastMovementType:   sql.NullString{String: operation_type, Valid: true},
 		LastMovementAmount: sql.NullString{String: fmt.Sprintf("%.2f", amount), Valid: true},
 	})
 	if err != nil {
 		http.Error(w, "Error al Depositar", http.StatusInternalServerError)
-		return
+		return sqlc.DepositRow{}, false
 	}
-	views.SetInfo(datos["Alias"], h.balanceFormateado(info.Balance), datos["Email"], info.LastMovementType.String).Render(h.ctx, w)
+
+	return info, true
 }
 
 func (h *Handler) Withdrawal(w http.ResponseWriter, r *http.Request) {
@@ -52,29 +60,36 @@ func (h *Handler) Withdrawal(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Monto inválido", http.StatusBadRequest)
 		return
 	}
+
+	info, valido := h.WithdrawalLogic(w, datos["Alias"], amount, "Retiro")
+	if valido {
+		datos["Email"] = r.URL.Query().Get("email")
+		views.SetInfo(datos["Alias"], h.balanceFormateado(info.Balance), datos["Email"], info.LastMovementType.String).Render(h.ctx, w)
+	}
+}
+
+func (h *Handler) WithdrawalLogic(w http.ResponseWriter, alias string, amount float64, operation_type string) (sqlc.WithdrawalRow, bool) {
 	if amount <= 0 {
 		w.Header().Set("HX-Trigger", "invalid_amount")
 		w.WriteHeader(http.StatusBadRequest)
-		return
+		return sqlc.WithdrawalRow{}, false
 	}
-	if !h.EnoughBalance(w, datos["Alias"], amount) {
+	if !h.EnoughBalance(w, alias, amount) {
 		w.Header().Set("HX-Trigger", "not_enough_balance")
 		w.WriteHeader(http.StatusBadRequest)
-		return
+		return sqlc.WithdrawalRow{}, false
 	}
-	datos["Email"] = r.URL.Query().Get("email")
 	info, err := h.queries.Withdrawal(h.ctx, sqlc.WithdrawalParams{
-		Alias:              datos["Alias"],
+		Alias:              alias,
 		Balance:            fmt.Sprintf("%.2f", amount),
-		LastMovementType:   sql.NullString{String: "Retiro", Valid: true},
+		LastMovementType:   sql.NullString{String: operation_type, Valid: true},
 		LastMovementAmount: sql.NullString{String: fmt.Sprintf("%.2f", amount), Valid: true},
 	})
 	if err != nil {
-		http.Error(w, "Error al quitar dinero de la cuenta origen", http.StatusInternalServerError)
-		return
+		http.Error(w, "Error al quitar dinero de la cuenta", http.StatusInternalServerError)
+		return sqlc.WithdrawalRow{}, false
 	}
-
-	views.SetInfo(datos["Alias"], h.balanceFormateado(info.Balance), datos["Email"], info.LastMovementType.String).Render(h.ctx, w)
+	return info, true
 }
 
 func (h *Handler) Transfer(w http.ResponseWriter, r *http.Request) {
@@ -82,11 +97,6 @@ func (h *Handler) Transfer(w http.ResponseWriter, r *http.Request) {
 		"Alias_propio": r.FormValue("own_alias"),
 		"Alias_otro":   r.FormValue("other_alias"),
 		"Amount":       r.FormValue("amount"),
-	}
-	if datos["Alias_propio"] == datos["Alias_otro"] {
-		w.Header().Set("HX-Trigger", "mismo_alias")
-		w.WriteHeader(http.StatusBadRequest)
-		return
 	}
 
 	amount, err := strconv.ParseFloat(datos["Amount"], 64)
@@ -96,49 +106,34 @@ func (h *Handler) Transfer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if amount <= 0 {
-		w.Header().Set("HX-Trigger", "invalid_amount")
-		w.WriteHeader(http.StatusBadRequest)
-		return
+	info, valido := h.TransferLogic(w, datos["Alias_propio"], datos["Alias_otro"], amount)
+	if valido {
+		datos["Email"] = r.URL.Query().Get("email")
+		views.SetInfo(datos["Alias_propio"], h.balanceFormateado(info.Balance), datos["Email"], info.LastMovementType.String).Render(h.ctx, w)
 	}
-	if !h.EnoughBalance(w, datos["Alias_propio"], amount) {
-		w.Header().Set("HX-Trigger", "not_enough_balance")
+}
+
+func (h *Handler) TransferLogic(w http.ResponseWriter, own_alias, other_alias string, amount float64) (sqlc.WithdrawalRow, bool) {
+	if own_alias == other_alias {
+		w.Header().Set("HX-Trigger", "mismo_alias")
 		w.WriteHeader(http.StatusBadRequest)
-		return
+		return sqlc.WithdrawalRow{}, false
 	}
 
-	_, err = h.queries.GetUser(h.ctx, datos["Alias_otro"])
+	_, err := h.queries.GetUser(h.ctx, other_alias)
 	if err == sql.ErrNoRows {
 		w.Header().Set("HX-Trigger", "alias_not_found")
 		w.WriteHeader(http.StatusBadRequest)
-		return
+		return sqlc.WithdrawalRow{}, false
 	}
 
-	datos["Email"] = r.URL.Query().Get("email")
-	info, err := h.queries.Withdrawal(h.ctx, sqlc.WithdrawalParams{
-		Alias:              datos["Alias_propio"],
-		Balance:            fmt.Sprintf("%.2f", amount),
-		LastMovementType:   sql.NullString{String: "Transferencia", Valid: true},
-		LastMovementAmount: sql.NullString{String: fmt.Sprintf("%.2f", amount), Valid: true},
-	})
-	if err != nil {
-		fmt.Printf("error: %v", err)
-		http.Error(w, "Error al quitar dinero de la cuenta de origen", http.StatusInternalServerError)
-		return
-	}
+	info, valido1 := h.WithdrawalLogic(w, own_alias, amount, "Transferencia")
+	_, valido2 := h.DepositLogic(w, other_alias, amount, "Transferencia")
 
-	_, err = h.queries.Deposit(h.ctx, sqlc.DepositParams{
-		Alias:              datos["Alias_otro"],
-		Balance:            fmt.Sprintf("%.2f", amount),
-		LastMovementType:   sql.NullString{String: "Deposito", Valid: true},
-		LastMovementAmount: sql.NullString{String: fmt.Sprintf("%.2f", amount), Valid: true},
-	})
-	if err != nil {
-		http.Error(w, "Error al depositar dinero en la cuenta destino", http.StatusInternalServerError)
-		return
+	if !valido1 || !valido2 {
+		return sqlc.WithdrawalRow{}, false
 	}
-
-	views.SetInfo(datos["Alias_propio"], h.balanceFormateado(info.Balance), datos["Email"], info.LastMovementType.String).Render(h.ctx, w)
+	return info, true
 }
 
 func (h *Handler) RequestMoney(w http.ResponseWriter, r *http.Request) {

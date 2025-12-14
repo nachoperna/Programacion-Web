@@ -4,8 +4,10 @@ import (
 	sqlc "TP_Especial/db/sqlc"
 	"database/sql"
 	"encoding/json"
-	_ "github.com/lib/pq"
 	"net/http"
+	"strconv"
+
+	_ "github.com/lib/pq"
 )
 
 type User struct {
@@ -133,4 +135,31 @@ func (h *Handler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
+}
+
+func (h *Handler) Operations(w http.ResponseWriter, r *http.Request) {
+	alias := r.URL.Query().Get("alias")
+	type Data struct {
+		Type     string `json:"type"`
+		Amount   string `json:"amount"`
+		To_Alias string `json:"to_alias"`
+	}
+	var operations []Data
+	err := json.NewDecoder(r.Body).Decode(&operations)
+	if err != nil {
+		http.Error(w, "Error: El JSON enviado es inválido.", http.StatusBadRequest)
+		return
+	}
+
+	for _, operation := range operations {
+		amount, _ := strconv.ParseFloat(operation.Amount, 64)
+		switch operation.Type {
+		case "Deposito":
+			h.DepositLogic(w, alias, amount, "Deposito")
+		case "Retiro":
+			h.WithdrawalLogic(w, alias, amount, "Retiro")
+		case "Transferencia":
+			h.TransferLogic(w, alias, operation.To_Alias, amount)
+		}
+	}
 }

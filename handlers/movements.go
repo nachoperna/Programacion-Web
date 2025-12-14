@@ -3,8 +3,11 @@ package handlers
 import (
 	db "TP_Especial/db/sqlc"
 	"TP_Especial/views"
-	_ "github.com/lib/pq"
+	"encoding/csv"
+	"fmt"
 	"net/http"
+
+	_ "github.com/lib/pq"
 )
 
 func (h *Handler) ListMovements(w http.ResponseWriter, r *http.Request) {
@@ -27,4 +30,25 @@ func (h *Handler) ListMovements(w http.ResponseWriter, r *http.Request) {
 	} else {
 		views.GetMovements(historial, alias, offset, true).Render(h.ctx, w)
 	}
+}
+
+func (h *Handler) MovementsToCsv(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/csv")
+	w.Header().Set("Content-Disposition", "attachment;filename=movements_report.csv")
+
+	writer := csv.NewWriter(w)
+
+	defer writer.Flush()
+
+	writer.Write([]string{"TIPO", "MONTO", "DIA", "HORA"})
+	historial, err := h.queries.GetHistoryComplete(h.ctx, r.URL.Query().Get("alias"))
+
+	if err != nil {
+		fmt.Printf("Error obteniendo historial de movimientos: %v", err)
+	}
+
+	for _, mov := range historial {
+		writer.Write([]string{mov.Type, mov.Amount, mov.Day, mov.Time})
+	}
+
 }

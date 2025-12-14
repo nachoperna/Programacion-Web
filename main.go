@@ -78,6 +78,9 @@ func main() {
 	// Endpoint REST para tabla Users
 	http.HandleFunc("/users/", handler.UserHandler)
 
+	// Endpoint REST para OPERACIONES DE USERS
+	http.HandleFunc("/users/operations", handler.Operations)
+
 	// Endpoint REST para tabla Money Requests
 	http.HandleFunc("/requests", handler.RequestsHandler)
 
@@ -90,6 +93,9 @@ func main() {
 
 	// Procesamiento de TABLA DE PEDIDOS DE DINERO PARA MOSTRRAR EN HOME
 	http.HandleFunc("/deleteRequestsTo", handler.DeleteRequestsTo)
+
+	// Procesamiento de GENERACION DE REPORTE CSV DE ULTIMOS MOVIMIENTOS
+	http.HandleFunc("/movementsToCsv", handler.MovementsToCsv)
 
 	fmt.Print("Servidor escuchando en puerto :8080")
 	http.ListenAndServe(":8080", nil)

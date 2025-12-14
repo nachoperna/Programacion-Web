@@ -33,29 +33,6 @@ HTTP 201
 [Asserts]
 jsonpath "$.usuarios_creados[0].alias" == "alias1"
 
-POST http://localhost:8080/requests
-Content-type: application/json
-[
-    {
-        "from_alias": "alias2",
-        "to_alias": "alias1",
-        "amount": "5000",
-        "message": "prueba de primer pedido"
-    },
-    {
-        "from_alias": "alias3",
-        "to_alias": "alias1",
-        "amount": "7500",
-        "message": "prueba de segundo pedido"
-    },
-    {
-        "from_alias": "alias2",
-        "to_alias": "alias1",
-        "amount": "15000",
-        "message": "prueba de tercer pedido"
-    }
-]
-      
 GET http://localhost:8080/users
 HTTP 200
 

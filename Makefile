@@ -135,7 +135,7 @@ clean:
 # Reconstruir la base desde cero: baja, sube, espera, aplica migraciones y genera código
 reset: down up wait migrate-up sqlc templ
 
-run: reset clean go test 
+run: reset clean go test inserts
 
 .PHONY: sqlc up down wait migrate-create migrate-up migrate-down migrate-reset templ reset go run test install-docker install-go install-templ install-sqlc install-hurl install-all go-up go-reset
 
