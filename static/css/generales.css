@@ -81,8 +81,42 @@ body {
       flex: 2;
       background-color: #FFA0B5;
       padding: 40px 40px;
-      display: block;
       align-items: center;
+      overflow: hidden;
+}
+
+.slide-in {
+      animation: slideIn 0.3s ease forwards;
+}
+
+@keyframes slideIn {
+      0% {
+            opacity: 0;
+            transform: translateX(1000px);
+            pointer-events: none;
+      }
+
+      100% {
+            opacity: 1;
+            transform: translateX(0);
+      }
+}
+
+.slide-out {
+      animation: slideOut 0.3s ease forwards;
+      pointer-events: none;
+}
+
+@keyframes slideOut {
+      0% {
+            opacity: 1;
+            transform: translateX(0);
+      }
+
+      100% {
+            opacity: 0;
+            transform: translateX(-1000px);
+      }
 }
 
 .ruta_invalida {
@@ -153,7 +187,7 @@ body {
 }
 
 .form-oculto {
-      display: none !important;
+      display: none;
 }
 
 /* Responsive */

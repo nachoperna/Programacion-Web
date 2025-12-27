@@ -41,14 +41,34 @@
                                     >No soy cliente
                               </button> 
                               <script>
-                                    function toggleActiveForm(buttonElement, formId) {
+                                    function toggleActiveForm(buttonElement, targetId) {
                                           document.querySelectorAll('.login-options button.active-button').forEach(btn => {
                                                 btn.classList.remove('active-button');
                                           });
                                           buttonElement.classList.add('active-button');
-                                          document.getElementById('login-form').classList.add('form-oculto');
-                                          document.getElementById('register-form').classList.add('form-oculto');
-                                          document.getElementById(formId).classList.remove('form-oculto');
+
+                                          const loginForm = document.getElementById('login-form');
+                                          const registerForm = document.getElementById('register-form');
+                                          
+                                          const nextForm = document.getElementById(targetId);
+                                          const currentForm = loginForm.classList.contains('form-oculto') ? registerForm : loginForm;
+
+                                          if (currentForm === nextForm) return;
+
+                                          currentForm.classList.add('slide-out');
+
+                                          setTimeout(() => {
+                                                currentForm.classList.add('form-oculto');
+                                                currentForm.classList.remove('slide-out');
+
+                                                nextForm.classList.remove('form-oculto');
+                                                nextForm.classList.add('slide-in');
+
+                                                setTimeout(() => {
+                                                      nextForm.classList.remove('slide-in');
+                                                }, 300);
+
+                                          }, 100);
                                     }
                               </script>
                         </div>
